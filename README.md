@@ -28,7 +28,7 @@ class Ekansh:
     name       = "Ekansh Jain"
     alias      = "cryptotechie"
     role       = "BTech CSE"
-    location   = "India 🇮🇳"
+    location   = "India"
 
     interests  = [
         "quantitative finance",
@@ -120,14 +120,17 @@ class Ekansh:
 
 <div align="center">
 
-```
+``` 
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║     thanks for stopping by  ·  star if you vibe          ║
+║     thanks for stopping by  ·  star if you vibe          ║   
 ║                 check the repos                          ║
 ╚══════════════════════════════════════════════════════════╝
 ```
+</div> 
 
+<div align="center"> 
+    
 <img src="https://capsule-render.vercel.app/api?type=waving&color=0:58a6ff,50:1a1f2e,100:000000&height=120&section=footer&animation=fadeIn" width="100%"/>
 
 </div>
