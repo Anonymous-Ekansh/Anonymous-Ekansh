@@ -21,7 +21,7 @@
 
 <img align="right" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="300" />
 
-### 🧠 `whoami`
+### `whoami`
 
 ```python
 class Ekansh:
@@ -51,25 +51,25 @@ class Ekansh:
 
 ---
 
-## ⚡ Tech Stack
+## Tech Stack
 
 <div align="center">
 
-#### 🔵 Core
+#### Core
 
 ![C++](https://img.shields.io/badge/C++-00599C?style=for-the-badge&logo=c%2B%2B&logoColor=white)
 ![JavaScript](https://img.shields.io/badge/JavaScript-F7DF1E?style=for-the-badge&logo=javascript&logoColor=black)
 ![HTML5](https://img.shields.io/badge/HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
 ![CSS3](https://img.shields.io/badge/CSS3-1572B6?style=for-the-badge&logo=css3&logoColor=white)
 
-#### 🟢 Learning
+#### Learning
 
 ![React](https://img.shields.io/badge/React-61DAFB?style=for-the-badge&logo=react&logoColor=black)
 ![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)
 ![Python](https://img.shields.io/badge/Python-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![MySQL](https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white)
 
-#### 🔧 Tools & Environment
+#### Tools & Environment
 
 ![Git](https://img.shields.io/badge/Git-F05032?style=for-the-badge&logo=git&logoColor=white)
 ![Linux](https://img.shields.io/badge/Linux-FCC624?style=for-the-badge&logo=linux&logoColor=black)
@@ -80,7 +80,7 @@ class Ekansh:
 
 ---
 
-## 📊 GitHub Stats
+## GitHub Stats
 
 <div align="center">
 
@@ -96,29 +96,19 @@ class Ekansh:
 
 ---
 
-## 🏆 GitHub Trophies
-
-<div align="center">
-
-<img src="https://github-profile-trophy.vercel.app/?username=Anonymous-Ekansh&theme=tokyonight&no-frame=true&no-bg=true&margin-w=6&column=6" />
-
-</div>
-
----
-
-## 🎯 Active Quests
+## Active Quests
 
 <div align="center">
 
 | &nbsp;&nbsp;⚡ Building&nbsp;&nbsp; | &nbsp;&nbsp;◈ Studying&nbsp;&nbsp; | &nbsp;&nbsp;∞ Reading&nbsp;&nbsp; | &nbsp;&nbsp;✦ Thinking&nbsp;&nbsp; |
 |:---:|:---:|:---:|:---:|
-| Finance dashboard w/ React | Quant trading fundamentals | The Trial — Kafka | Philosophy of mind |
+| Finance dashboard w/ React | Quant trading fundamentals | The Trial — Kafka | To get better|
 
 </div>
 
 ---
 
-## 📈 Contribution Graph
+## Contribution Graph
 
 <div align="center">
 
@@ -133,8 +123,8 @@ class Ekansh:
 ```
 ╔══════════════════════════════════════════════════════════╗
 ║                                                          ║
-║     thanks for stopping by  ·  star if you vibe 🌟      ║
-║                                                          ║
+║     thanks for stopping by  ·  star if you vibe          ║
+║                 check the repos                          ║
 ╚══════════════════════════════════════════════════════════╝
 ```
 
