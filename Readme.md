@@ -19,26 +19,19 @@
 
 ```rust
 
-fn main() {
-    let me = Ekansh {
-        name:     "Ekansh Jain",
-        role:     "BTech CSE",
-        location: "India",
-        interests: [
-            "quantitative finance",
-            "philosophy of mind",
-            "systems programming",
-            "consciousness studies",
-        ],
-        current: Current {
-            building: "Finance dashboard — React",
-            studying: "Quant trading fundamentals",
-            reading:  "The Trial — Kafka",
-            asking:   "What is consciousness?",
-        },
-        open: true,
-    };
-}
+const dev = {
+  name: "Ekansh Jain",
+  alias: "cryptotechie",
+  role: "CSE Student",
+  focus: "Dev + Quant",
+  skills: [
+    "C++", "JavaScript",
+    "HTML/CSS", "Git"
+  ],
+  available: true
+};
+// ready to build something great
+ 
 ```
 
 <br clear="right"/>
