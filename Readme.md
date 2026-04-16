@@ -18,21 +18,6 @@
 <img align="right" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="280" />
 
 ```rust
-struct Ekansh {
-    name:      &'static str,
-    role:      &'static str,
-    location:  &'static str,
-    interests: [&'static str; 4],
-    current:   Current,
-    open:      bool,
-}
-
-struct Current {
-    building: &'static str,
-    studying: &'static str,
-    reading:  &'static str,
-    asking:   &'static str,
-}
 
 fn main() {
     let me = Ekansh {
