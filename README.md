@@ -1,124 +1,145 @@
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0a0a0a,50:0a0a0a,100:0a0a0a&height=200&section=header&text=Ekansh%20Jain.&fontSize=72&fontColor=ffffff&fontAlignY=58&desc=B.Tech%20CSE%20%20%C2%B7%20%20Developer%20%20%C2%B7%20%20Quant&descSize=15&descAlignY=78&descColor=4ade80&animation=fadeIn&fontAlign=38" width="100%"/>
+<div align="center">
+  <img src="https://capsule-render.vercel.app/api?type=waving&color=gradient&height=220&section=header&text=Ekansh%20Jain&fontSize=65&fontAlignY=45&desc=Software%20Engineer%20%C2%B7%20Full%20Stack%20%C2%B7%20Quant%20Finance&descSize=16&descAlignY=70&animation=twinkling" width="100%" />
+
+  <a href="https://git.io/typing-svg">
+    <img src="https://readme-typing-svg.demolab.com?font=JetBrains+Mono&weight=600&size=20&pause=1000&color=8B5CF6&center=true&vCenter=true&width=600&lines=Building+products+that+matter.;Full+Stack+%7C+Systems+%7C+Quant.;Seeking+2026%2F2027+Internships.;Always+shipping%2C+always+learning." alt="Typing SVG" />
+  </a>
+  <br/><br/>
+  
+  ![Student](https://img.shields.io/badge/B.Tech%20CSE-Shiv%20Nadar%20University-2563EB?style=flat-square&logo=bookstack&logoColor=white)
+  ![CGPA](https://img.shields.io/badge/CGPA-9.95-059669?style=flat-square&logo=googleanalytics&logoColor=white)
+  ![Batch](https://img.shields.io/badge/Expected-May%202029-D97706?style=flat-square&logo=probot&logoColor=white)
+  ![Location](https://img.shields.io/badge/Base-India-DC2626?style=flat-square&logo=googlemaps&logoColor=white)
+  <br/><br/>
+  
+  [![Portfolio](https://img.shields.io/badge/Portfolio-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://iamekansh.netlify.app)
+  [![LinkedIn](https://img.shields.io/badge/LinkedIn-%230077B5.svg?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/ekansh-jain-cryptotechie)
+  [![Email](https://img.shields.io/badge/Email-D14836?style=for-the-badge&logo=gmail&logoColor=white)](mailto:ekanshjain45@gmail.com)
+  [![GitHub](https://img.shields.io/badge/GitHub-181717?style=for-the-badge&logo=github&logoColor=white)](https://github.com/Anonymous-Ekansh)
+</div>
+
+<br/>
 
 <div align="center">
-
-[![Portfolio](https://img.shields.io/badge/%3CEJ%2F%3E%20Portfolio-0a0a0a?style=for-the-badge&logoColor=4ade80)](https://iamekansh.netlify.app)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-0a0a0a?style=for-the-badge&logo=linkedin&logoColor=4ade80)](https://linkedin.com/in/ekansh-jain-cryptotechie)
-[![Mail](https://img.shields.io/badge/Mail-0a0a0a?style=for-the-badge&logo=gmail&logoColor=4ade80)](mailto:helloworldiamekansh@gmail.com)
-[![GitHub](https://img.shields.io/badge/GitHub-0a0a0a?style=for-the-badge&logo=github&logoColor=4ade80)](https://github.com/Anonymous-Ekansh)
-
-![Profile Views](https://komarev.com/ghpvc/?username=Anonymous-Ekansh&color=4ade80&style=for-the-badge&label=VIEWS)
-
+  <img src="https://komarev.com/ghpvc/?username=Anonymous-Ekansh&color=8B5CF6&style=flat-square&label=PROFILE+VIEWS" alt="Profile Views"/>
 </div>
 
 ---
 
-<img align="right" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="260" />
+## ⚡ About Me
 
-```js
-// about.js
+<img align="right" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="220" style="border-radius: 10px;" />
 
-const dev = {
-  name:     "Ekansh Jain",
-  alias:    "cryptotechie",
-  role:     "CSE Student",
-  focus:    "Dev + Quant",
+I'm an 18-year-old, first-year CS undergrad at Shiv Nadar University building real products from day one. My work sits at the intersection of **full-stack engineering**, **systems design**, and **quantitative finance** — I care about correctness, scale, and shipping things that people actually use.
 
-  skills: [
-    "C++", "JavaScript",
-    "React", "HTML/CSS", "Git",
-  ],
+At **Kinexis**, I architected a campus networking platform that reached 500+ active users across 18+ departments. With **MealMate**, I shipped a cross-platform React Native app with real-time group state. With **PolyIntel**, I built a prediction market intelligence terminal with live anomaly detection and cross-market correlation.
 
-  current: {
-    building: "Finance dashboard — React",
-    studying: "Quant trading fundamentals",
-    reading:  "The Trial — Kafka",
-    asking:   "What is consciousness?",
-  },
+I'm currently the **Technical Lead at TEDx Shiv Nadar University**, owning all AV infrastructure and livestream execution. 
 
-  available: true,
-};
-
-// ready to build something great
-```
+**Open To:** SWE Internships (2026/2027) · Quant Research Roles · Open-Source Collaboration
 
 <br clear="right"/>
 
 ---
 
-## Stack
+## 🛠️ Tech Arsenal
 
 <div align="center">
-
-**Proficient**
-
-![C++](https://img.shields.io/badge/C++-0a0a0a?style=for-the-badge&logo=c%2B%2B&logoColor=4ade80)
-![JavaScript](https://img.shields.io/badge/JavaScript-0a0a0a?style=for-the-badge&logo=javascript&logoColor=4ade80)
-![HTML5](https://img.shields.io/badge/HTML5-0a0a0a?style=for-the-badge&logo=html5&logoColor=4ade80)
-![CSS3](https://img.shields.io/badge/CSS3-0a0a0a?style=for-the-badge&logo=css3&logoColor=4ade80)
-
-**Building With**
-
-![React](https://img.shields.io/badge/React-0a0a0a?style=for-the-badge&logo=react&logoColor=4ade80)
-![Node.js](https://img.shields.io/badge/Node.js-0a0a0a?style=for-the-badge&logo=nodedotjs&logoColor=4ade80)
-![Python](https://img.shields.io/badge/Python-0a0a0a?style=for-the-badge&logo=python&logoColor=4ade80)
-![MySQL](https://img.shields.io/badge/MySQL-0a0a0a?style=for-the-badge&logo=mysql&logoColor=4ade80)
-
-**Environment**
-
-![Git](https://img.shields.io/badge/Git-0a0a0a?style=for-the-badge&logo=git&logoColor=4ade80)
-![Linux](https://img.shields.io/badge/Linux-0a0a0a?style=for-the-badge&logo=linux&logoColor=4ade80)
-![VS Code](https://img.shields.io/badge/VS%20Code-0a0a0a?style=for-the-badge&logo=visualstudiocode&logoColor=4ade80)
-![GitHub](https://img.shields.io/badge/GitHub-0a0a0a?style=for-the-badge&logo=github&logoColor=4ade80)
-
+  <a href="https://skillicons.dev">
+    <img src="https://skillicons.dev/icons?i=cpp,ts,js,py,html,css,react,nextjs,nodejs,express,postgres,supabase,git,github,vercel,netlify,linux,postman,tailwind&perline=10" />
+  </a>
 </div>
 
 ---
 
-## Stats
+## 🚀 Featured Builds
 
-<div align="center">
+<details>
+<summary><b>⬡ Kinexis — Campus Networking Platform</b> &nbsp;·&nbsp; <code>kinexis.in</code></summary><br/>
+A full-stack campus networking platform architected from the ground up to solve cross-department discovery at Shiv Nadar University. Students filter collaborators by interest tags, browse open projects, and track event feeds.
 
-<img src="https://github-readme-stats.vercel.app/api?username=Anonymous-Ekansh&show_icons=true&hide_border=true&count_private=true&include_all_commits=true&bg_color=0a0a0a&title_color=4ade80&icon_color=4ade80&text_color=ffffff&border_radius=8" height="170"/>
-&nbsp;&nbsp;
-<img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Anonymous-Ekansh&layout=compact&hide_border=true&bg_color=0a0a0a&title_color=4ade80&text_color=ffffff&border_radius=8&langs_count=6" height="170"/>
+- **Stack:** Next.js, Node.js, TypeScript, Supabase, PostgreSQL
+- **Scale:** 500+ active users across 18+ departments
+- **Link:** [github.com/Anonymous-Ekansh/Kinexis](https://github.com/Anonymous-Ekansh/Kinexis)
+</details>
 
-<br/><br/>
+<details>
+<summary><b>⬡ MealMate — Cross-Platform Meal Planning App</b></summary><br/>
+A cross-platform iOS and Android meal-planning app with real-time group collaboration. Teams share a food catalog, coordinate via in-app group chat, and receive live activity notifications.
 
-<img src="https://github-readme-streak-stats.herokuapp.com?user=Anonymous-Ekansh&hide_border=true&background=0a0a0a&ring=4ade80&fire=4ade80&currStreakLabel=4ade80&sideLabels=6b7280&dates=6b7280&sideNums=ffffff&currStreakNum=ffffff&border_radius=8" />
+- **Stack:** React Native, Expo, TypeScript, Supabase, Zustand
+- **Real-Time:** Supabase Realtime with sub-second state sync across clients
+- **Link:** [github.com/Anonymous-Ekansh/MealMate](https://github.com/Anonymous-Ekansh/MealMate)
+</details>
 
+<details>
+<summary><b>⬡ PolyIntel — Prediction Market Intelligence Terminal</b></summary><br/>
+A professional-grade intelligence terminal for live Polymarket prediction contracts. Built for traders operating in India where ISP/CORS restrictions block direct API access.
+
+- **Stack:** Next.js 14, TypeScript, Express.js, TailwindCSS, TanStack Query
+- **Infrastructure:** Server-side proxy + Node.js caching layer bypassing restrictions
+- **Link:** [github.com/Anonymous-Ekansh/PolyIntel](https://github.com/Anonymous-Ekansh/PolyIntel)
+</details>
+
+---
+
+## 🎙️ Field Experience & Communities
+
+**Technical Lead @ TEDx Shiv Nadar University** `(Apr 2026 – Present)`
+> Owning all AV infrastructure, livestream pipelines, and on-stage technical operations for campus TEDx events. Responsible for zero-downtime execution on event day.
+
+<div align="left">
+  ![TEDx](https://img.shields.io/badge/TEDx-Technical%20Lead-E62B1E?style=flat-square&logo=ted&logoColor=white)
+  ![ACM](https://img.shields.io/badge/ACM-Student%20Chapter-0085CA?style=flat-square)
+  ![Finvest](https://img.shields.io/badge/Finvest%20Club-Member-10B981?style=flat-square)
+  ![ECell](https://img.shields.io/badge/E--Cell-Member-F59E0B?style=flat-square)
 </div>
 
 ---
 
-## Activity
+## 📊 GitHub Analytics
 
 <div align="center">
-
-<img src="https://github-readme-activity-graph.vercel.app/graph?username=Anonymous-Ekansh&bg_color=0a0a0a&color=4ade80&line=4ade80&point=ffffff&area=true&area_color=4ade80&hide_border=true&radius=8" width="100%"/>
-
+  <img src="https://github-readme-stats.vercel.app/api?username=Anonymous-Ekansh&show_icons=true&hide_border=true&count_private=true&include_all_commits=true&theme=radical&border_radius=10" height="170"/>
+  &nbsp;&nbsp;
+  <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Anonymous-Ekansh&layout=compact&hide_border=true&theme=radical&border_radius=10&langs_count=6" height="170"/>
+  <br/><br/>
+  <img src="https://github-readme-streak-stats.herokuapp.com?user=Anonymous-Ekansh&hide_border=true&theme=radical&border_radius=10" />
 </div>
 
 ---
 
-## Current
+## 📈 Activity Graph
 
 <div align="center">
-
-| Building | Studying | Reading | Thinking |
-|:---:|:---:|:---:|:---:|
-| Finance dashboard w/ React | Quant trading fundamentals | The Trial — Kafka | To get better |
-
+  <img src="https://github-readme-activity-graph.vercel.app/graph?username=Anonymous-Ekansh&theme=react&hide_border=true&radius=10" width="100%"/>
 </div>
 
 ---
 
+## 🐍 Contribution Snake
+
 <div align="center">
-
-```
-  // always ready to collaborate  ·  view the repos  ·  star what you like
-```
-
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
+    <img alt="github contribution grid snake animation" src="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
+  </picture>
 </div>
 
-<img src="https://capsule-render.vercel.app/api?type=waving&color=0:0a0a0a,100:0a0a0a&height=100&section=footer" width="100%"/>
+---
+
+## 🎯 Current Focus
+
+```yaml
+ekansh@focus:~$ cat current_state.yml
+learning:
+  - Quantitative trading fundamentals & market microstructure
+  - Advanced PostgreSQL (query optimization, indexing)
+  - Distributed systems & CAP theorem
+building:
+  - Finance dashboard with React and live market feeds
+  - Deeper matching algorithms for Kinexis
+exploring:
+  - Prediction market modelling & probability calibration
+  - Low-latency systems in C++
