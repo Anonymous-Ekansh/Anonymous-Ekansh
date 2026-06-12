@@ -26,7 +26,7 @@
 
 ---
 
-## ⚡ About Me
+## About Me
 
 <img align="right" src="https://media.giphy.com/media/qgQUggAC3Pfv687qPC/giphy.gif" width="220" style="border-radius: 10px;" />
 
@@ -42,7 +42,7 @@ I'm currently the **Technical Lead at TEDx Shiv Nadar University**, owning all A
 
 ---
 
-## 🛠️ Tech Arsenal
+## Tech Arsenal
 
 <div align="center">
   <a href="https://skillicons.dev">
@@ -52,7 +52,7 @@ I'm currently the **Technical Lead at TEDx Shiv Nadar University**, owning all A
 
 ---
 
-## 🚀 Featured Builds
+## Featured Builds
 
 <details>
 <summary><b>⬡ Kinexis — Campus Networking Platform</b> &nbsp;·&nbsp; <code>kinexis.in</code></summary><br/>
@@ -83,21 +83,21 @@ A professional-grade intelligence terminal for live Polymarket prediction contra
 
 ---
 
-## 🎙️ Field Experience & Communities
+## Experience & Communities
 
 **Technical Lead @ TEDx Shiv Nadar University** `(Apr 2026 – Present)`
-> Owning all AV infrastructure, livestream pipelines, and on-stage technical operations for campus TEDx events. Responsible for zero-downtime execution on event day.
 
-<div align="left">
-  ![TEDx](https://img.shields.io/badge/TEDx-Technical%20Lead-E62B1E?style=flat-square&logo=ted&logoColor=white)
-  ![ACM](https://img.shields.io/badge/ACM-Student%20Chapter-0085CA?style=flat-square)
-  ![Finvest](https://img.shields.io/badge/Finvest%20Club-Member-10B981?style=flat-square)
-  ![ECell](https://img.shields.io/badge/E--Cell-Member-F59E0B?style=flat-square)
+
+<div align="center">
+  <img src="https://img.shields.io/badge/TEDx-Technical%20Lead-E62B1E?style=flat-square&logo=ted&logoColor=white" alt="TEDx" />
+  <img src="https://img.shields.io/badge/ACM-Student%20Chapter-0085CA?style=flat-square" alt="ACM" />
+  <img src="https://img.shields.io/badge/Finvest%20Club-Member-10B981?style=flat-square" alt="Finvest" />
+  <img src="https://img.shields.io/badge/E--Cell-Member-F59E0B?style=flat-square" alt="ECell" />
 </div>
 
 ---
 
-## 📊 GitHub Analytics
+## GitHub Analytics
 
 <div align="center">
   <img src="https://github-readme-stats.vercel.app/api?username=Anonymous-Ekansh&show_icons=true&hide_border=true&count_private=true&include_all_commits=true&theme=radical&border_radius=10" height="170"/>
@@ -109,7 +109,7 @@ A professional-grade intelligence terminal for live Polymarket prediction contra
 
 ---
 
-## 📈 Activity Graph
+## Activity Graph
 
 <div align="center">
   <img src="https://github-readme-activity-graph.vercel.app/graph?username=Anonymous-Ekansh&theme=react&hide_border=true&radius=10" width="100%"/>
@@ -117,7 +117,7 @@ A professional-grade intelligence terminal for live Polymarket prediction contra
 
 ---
 
-## 🐍 Contribution Snake
+## Contribution Snake
 
 <div align="center">
   <picture>
@@ -129,10 +129,10 @@ A professional-grade intelligence terminal for live Polymarket prediction contra
 
 ---
 
-## 🎯 Current Focus
+## Current Focus
 
 ```yaml
-ekansh@focus:~$ cat current_state.yml
+ekansh@focus:
 learning:
   - Quantitative trading fundamentals & market microstructure
   - Advanced PostgreSQL (query optimization, indexing)
