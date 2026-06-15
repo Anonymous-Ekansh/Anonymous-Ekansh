@@ -104,7 +104,7 @@ A professional-grade intelligence terminal for live Polymarket prediction contra
   &nbsp;&nbsp;
   <img src="https://github-readme-stats.vercel.app/api/top-langs/?username=Anonymous-Ekansh&layout=compact&hide_border=true&theme=radical&border_radius=10&langs_count=6" height="170"/>
   <br/><br/>
-  <img src="https://github-readme-streak-stats.herokuapp.com?user=Anonymous-Ekansh&hide_border=true&theme=radical&border_radius=10" />
+  <img src="https://streak-stats.demolab.com?user=Anonymous-Ekansh&theme=radical&hide_border=true&border_radius=10" />
 </div>
 
 ---
