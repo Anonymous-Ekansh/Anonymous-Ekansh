@@ -65,7 +65,7 @@ A full-stack campus networking platform architected from the ground up to solve 
 
 <details>
 <summary><b>⬡ MealMate — Cross-Platform Meal Planning App</b></summary><br/>
-A cross-platform iOS and Android meal-planning app with real-time group collaboration. Teams share a food catalog, coordinate via in-app group chat, and receive live activity notifications.
+A Android meal-planning app with real-time group collaboration. Teams share a food catalog, coordinate via in-app group chat, and receive live activity notifications.
 
 - **Stack:** React Native, Expo, TypeScript, Supabase, Zustand
 - **Real-Time:** Supabase Realtime with sub-second state sync across clients
