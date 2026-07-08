@@ -34,8 +34,6 @@ I'm an 18-year-old, first-year CS undergrad at Shiv Nadar University building re
 
 At **Kinexis**, I architected a campus networking platform that reached 500+ active users across 18+ departments. With **MealMate**, I shipped a cross-platform React Native app with real-time group state. With **PolyIntel**, I built a prediction market intelligence terminal with live anomaly detection and cross-market correlation.
 
-I'm currently the **Technical Lead at TEDx Shiv Nadar University**, owning all AV infrastructure and livestream execution. 
-
 **Open To:** SWE Internships (2026/2027) · Quant Research Roles · Open-Source Collaboration
 
 <br clear="right"/>
