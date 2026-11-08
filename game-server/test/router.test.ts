@@ -139,6 +139,12 @@ describe("router", () => {
     expect(html).toContain("cdn.jsdelivr.net/npm/chess.js@1.4.0");
     expect(html).toContain("sha384-"); // SRI hash on the pinned chess.js fetch
     expect(html).toContain("integrity: SRI");
+
+    // The SRI-verified module is imported from a blob URL, so script-src must allow blob:.
+    const csp = page.headers.get("content-security-policy") ?? "";
+    expect(csp).toContain("script-src");
+    expect(csp).toContain("blob:");
+    expect(csp).toContain("https://cdn.jsdelivr.net");
   });
 
   it("returns JSON state and accepts a JSON move", async () => {

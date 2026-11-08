@@ -408,8 +408,10 @@ function htmlResponse(html: string): Response {
       "Cache-Control": "no-cache, max-age=0, must-revalidate",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "no-referrer",
+      // blob: is required: chess.js is fetched with an SRI hash and imported from a blob URL,
+      // because an integrity check cannot be attached to a bare module import.
       "Content-Security-Policy":
-        "default-src 'none'; script-src 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
+        "default-src 'none'; script-src 'unsafe-inline' blob: https://cdn.jsdelivr.net; style-src 'unsafe-inline'; img-src 'self' data:; connect-src 'self' https://cdn.jsdelivr.net; base-uri 'none'; form-action 'none'; frame-ancestors 'none'",
     },
   });
 }
