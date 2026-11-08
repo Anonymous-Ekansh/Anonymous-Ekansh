@@ -98,7 +98,7 @@ python3 tools/build_assets.py
 GITHUB_TOKEN=ghp_xxx python3 tools/telemetry.py
 
 # Regenerate the arena block printed to stdout (never written to disk)
-python3 tools/build_arena.py            # --variant a|b, --compare
+python3 tools/build_arena.py            # prints the block; writes nothing
 
 # Game boards (legacy, driven by game.yml)
 pip install -r requirements.txt

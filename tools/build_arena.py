@@ -1,25 +1,36 @@
 #!/usr/bin/env python3
 """
 tools/build_arena.py
-Print the static README block for the ARENA boards.
+Print the README block for the ARENA boards.
 
 Reads WORKER from profile.json -> "worker_url" (no other input, no network).
 
-    python3 tools/build_arena.py                 # print the chosen variant
-    python3 tools/build_arena.py --variant a     # (a) nested <table> per board
-    python3 tools/build_arena.py --variant b     # (b) inline <a><img> rows
-    python3 tools/build_arena.py --compare       # both, plus the gap estimate
+Layout
+------
+An outer table splits the block into two fixed-width columns (no percentages):
 
-The block is plain HTML: no <script>, no style attributes, no markers, so a bot cannot
-rewrite it and a reader can paste it anywhere. Nothing is written to disk.
+    <td valign="top" width="352">  chess: status banner, 8x8 board, recent banner
+    <td valign="top" width="192">  tic-tac-toe, centred: 3x3 board, status banner
 
-Gap comparison
---------------
-GitHub gives every table cell padding, and it also gives adjacent inline images one
-whitespace gap. Variant (a) therefore adds dead space at every interior cell boundary
-(~12 px on GitHub), while variant (b) joins the anchors with no whitespace at all
-(`</a><a`), so its only gaps are the deliberate ones. The script scores both on that
-basis and prints the lower one by default.
+352 = 8 x 44 and 192 = 3 x 64, so each banner is exactly as wide as the board it sits over.
+The chess status banner is above the board and the recent-moves banner below it.
+
+Why the boards are not nested <table>s
+--------------------------------------
+GitHub's markdown CSS pads every cell of every table, nested ones included:
+
+    .markdown-body table td { padding: 6px 13px; border: 1px solid ... }
+
+and it strips both `style` and `border="0"` from README HTML before rendering, so the padding
+cannot be removed. A nested table with one <td> per tile therefore renders each tile as a
+bordered box 26px apart, which is 560px wide for eight 44px tiles instead of 352.
+
+So each rank is a plain run of <a><picture>…</picture></a> inside the cell, with no whitespace
+between the tags: GitHub renders inline images that touch as one row, and any whitespace
+becomes a visible gap. Ranks are separated by <br/>.
+
+The block is plain HTML: no <script>, no style attributes, no markers. Nothing is written to
+disk — paste the printed block between the ARENA markers in README.md.
 """
 
 from __future__ import annotations
@@ -35,14 +46,18 @@ PROFILE = ROOT / "profile.json"
 FILES = "abcdefgh"
 RANKS = range(8, 0, -1)
 
-# One padded table cell on GitHub is roughly 12 px wider than the image it holds.
-CELL_GAP_PX = 12
+# Geometry shared with game-server/src/svg.ts.
+CHESS_TILE = 44
+TTT_TILE = 64
+BANNER_HEIGHT = 40
+CHESS_WIDTH = CHESS_TILE * 8
+TTT_WIDTH = TTT_TILE * 3
 
 
 def load_worker() -> str:
     if not PROFILE.exists():
         sys.exit(f"[build_arena] missing {PROFILE}")
-    with PROFILE.open("r", encoding="utf-8") as fh:
+    with open(PROFILE, encoding="utf-8") as fh:
         data = json.load(fh)
     worker = str(data.get("worker_url") or "").strip().rstrip("/")
     if not worker.startswith("https://"):
@@ -54,7 +69,7 @@ def load_worker() -> str:
 
 
 def picture(url: str, width: int, height: int, alt: str) -> str:
-    """Light/dark pair, the same pattern the rest of the profile uses."""
+    """Light/dark pair on one line, so no whitespace creeps between image and anchor tags."""
     return (
         f'<picture><source media="(prefers-color-scheme: dark)" srcset="{url}?theme=dark"/>'
         f'<img src="{url}?theme=light" width="{width}" height="{height}" alt="{alt}"/></picture>'
@@ -62,103 +77,52 @@ def picture(url: str, width: int, height: int, alt: str) -> str:
 
 
 def chess_tile(worker: str, sq: str) -> str:
-    return f'<a href="{worker}/c/click/{sq}">{picture(f"{worker}/c/tile/{sq}.svg", 44, 44, sq)}</a>'
+    url = f"{worker}/c/tile/{sq}.svg"
+    return f'<a href="{worker}/c/click/{sq}">{picture(url, CHESS_TILE, CHESS_TILE, sq)}</a>'
 
 
 def ttt_tile(worker: str, cell: int) -> str:
-    return f'<a href="{worker}/t/click/{cell}">{picture(f"{worker}/t/tile/{cell}.svg", 72, 72, f"tile {cell}")}</a>'
+    url = f"{worker}/t/tile/{cell}.svg"
+    return f'<a href="{worker}/t/click/{cell}">{picture(url, TTT_TILE, TTT_TILE, f"tile {cell + 1}")}</a>'
 
 
-# --- variant (a): one nested table per board (one padded <td> per square) -------------
-
-def chess_board_table(worker: str) -> str:
-    rows = []
-    for rank in RANKS:
-        cells = "".join(f"<td>{chess_tile(worker, f + str(rank))}</td>" for f in FILES)
-        rows.append(f"<tr>{cells}</tr>")
-    return '<table cellpadding="0" cellspacing="0" border="0">' + "".join(rows) + "</table>"
+def chess_rows(worker: str) -> str:
+    """Eight ranks, each a gapless row of eight tiles, one row per line."""
+    return "<br/>".join("".join(chess_tile(worker, f + str(rank)) for f in FILES) for rank in RANKS)
 
 
-def ttt_board_table(worker: str) -> str:
-    rows = []
-    for r in range(3):
-        cells = "".join(f"<td>{ttt_tile(worker, r * 3 + c)}</td>" for c in range(3))
-        rows.append(f"<tr>{cells}</tr>")
-    return '<table cellpadding="0" cellspacing="0" border="0">' + "".join(rows) + "</table>"
+def ttt_rows(worker: str) -> str:
+    """Three rows of three 64px tiles, centred by the cell's align="center"."""
+    return "<br/>".join("".join(ttt_tile(worker, r * 3 + c) for c in range(3)) for r in range(3))
 
 
-# --- variant (b): inline images, no whitespace between anchors ------------------------
+def build(worker: str) -> str:
+    status = picture(f"{worker}/c/status.svg", CHESS_WIDTH, BANNER_HEIGHT, "community chess — status")
+    recent = picture(f"{worker}/c/recent.svg", CHESS_WIDTH, BANNER_HEIGHT, "community chess — last five moves")
+    ttt_status = picture(f"{worker}/t/status.svg", TTT_WIDTH, BANNER_HEIGHT, "tic-tac-toe — status")
 
-def chess_board_inline(worker: str) -> str:
-    rows = ["".join(chess_tile(worker, f + str(rank)) for f in FILES) for rank in RANKS]
-    return "<br/>".join(rows)
-
-
-def ttt_board_inline(worker: str) -> str:
-    rows = ["".join(ttt_tile(worker, r * 3 + c) for c in range(3)) for r in range(3)]
-    return "<br/>".join(rows)
-
-
-def gap_estimate(variant: str) -> int:
-    if variant == "a":
-        chess_boundaries = 8 * (8 - 1)
-        ttt_boundaries = 3 * (3 - 1)
-        return (chess_boundaries + ttt_boundaries) * CELL_GAP_PX
-    return 0
-
-
-def build(worker: str, variant: str) -> str:
-    if variant == "a":
-        chess_board = chess_board_table(worker)
-        ttt_board = ttt_board_table(worker)
-    else:
-        chess_board = chess_board_inline(worker)
-        ttt_board = ttt_board_inline(worker)
-
-    status = picture(f"{worker}/c/status.svg", 540, 40, "community chess — status")
-    recent = picture(f"{worker}/c/recent.svg", 540, 40, "community chess — last five moves")
-    ttt_status = picture(f"{worker}/t/status.svg", 320, 40, "tic-tac-toe — status")
-
-    return f"""<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
-<td valign="top" width="62%">
-  <b><code>COMMUNITY CHESS</code></b> <sub>— click a piece, then a square</sub><br/>
-  {status}<br/>
-{chess_board}<br/>
-  {recent}<br/>
-  <a href="{worker}/play">play full-screen</a>
+    return f"""<table cellspacing="0" cellpadding="0"><tr>
+<td valign="top" width="{CHESS_WIDTH}" align="left">
+<b><code>COMMUNITY CHESS</code></b> <sub>— click a piece, then a square</sub><br/>
+{status}<br/>
+{chess_rows(worker)}<br/>
+{recent}<br/>
+<a href="{worker}/play">play full-screen</a>
 </td>
-<td valign="top" width="38%">
-  <b><code>NO TIME? QUICK TIC-TAC-TOE</code></b><br/>
-{ttt_board}<br/>
-  {ttt_status}<br/>
-  <a href="{worker}/t/new">new game</a>
-</td></tr></table>"""
+<td valign="top" width="{TTT_WIDTH}" align="center">
+<b><code>NO TIME?</code></b><br/>
+<b><code>QUICK TIC-TAC-TOE</code></b><br/>
+{ttt_rows(worker)}<br/>
+{ttt_status}<br/>
+<a href="{worker}/t/new">new game</a>
+</td>
+</tr></table>"""
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Print the README block for the ARENA boards.")
-    parser.add_argument("--variant", choices=["a", "b"], help="force one layout")
-    parser.add_argument("--compare", action="store_true", help="print both layouts and the gap estimate")
-    args = parser.parse_args()
-
-    worker = load_worker()
-    chosen = "b" if gap_estimate("b") <= gap_estimate("a") else "a"
-
-    if args.compare:
-        for variant in ("a", "b"):
-            print(f"<!-- variant {variant} · estimated gap {gap_estimate(variant)} px -->", file=sys.stderr)
-            print(build(worker, variant))
-            print()
-        print(f"[build_arena] chosen variant: {chosen} (fewest gaps)", file=sys.stderr)
-        return
-
-    variant = args.variant or chosen
-    print(build(worker, variant))
-    if args.variant and args.variant != chosen:
-        print(
-            f"[build_arena] note: variant {args.variant} was forced; variant {chosen} has fewer gaps",
-            file=sys.stderr,
-        )
+    parser.parse_args()
+    print(build(load_worker()))
 
 
 if __name__ == "__main__":
