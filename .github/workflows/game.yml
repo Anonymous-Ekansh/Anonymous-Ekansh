@@ -1,0 +1,60 @@
+name: Profile Game Move Handler
+
+on:
+  issues:
+    types: [opened]
+
+jobs:
+  play-move:
+    if: startsWith(github.event.issue.title, 'game|')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      issues: write
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: "pip"
+
+      - name: Install Dependencies
+        run: |
+          pip install -r requirements.txt
+
+      - name: Execute Game Move
+        id: execute_move
+        run: |
+          python -m games.run \
+            --issue-title "${{ github.event.issue.title }}" \
+            --player "${{ github.event.issue.user.login }}"
+
+      - name: Commit & Push Updated Game Assets
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add assets/games/ assets/dark/games/ games/state/
+          git commit -m "game: execute move '${{ github.event.issue.title }}' by @${{ github.event.issue.user.login }} [skip ci]" || echo "No changes"
+          git push origin main
+
+      - name: Close Issue with Response
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            await github.rest.issues.createComment({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              body: `Move recorded from \`${context.payload.issue.title}\`. The profile README game board has been updated!`
+            });
+            await github.rest.issues.update({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: context.issue.number,
+              state: 'closed'
+            });

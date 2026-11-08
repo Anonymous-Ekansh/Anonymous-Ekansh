@@ -1,0 +1,78 @@
+<svg viewBox="0 0 1000 290" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Interactive Tic-Tac-Toe Game">
+  <style>
+    .mono { font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace; }
+    .rise { opacity: 0; animation: rise 0.7s cubic-bezier(.2,.7,.2,1) forwards; }
+    @keyframes rise { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+    .fade { opacity: 0; animation: fade 0.6s ease forwards; }
+    @keyframes fade { to { opacity: 1; } }
+    .hover-cell:hover { fill-opacity: 0.8; cursor: pointer; }
+    @media (prefers-reduced-motion: reduce) {
+      .rise, .fade { animation: none !important; opacity: 1 !important; transform: none !important; }
+    }
+  </style>
+  <line x1="48" y1="36" x2="952" y2="36" stroke="#C4C4C4" stroke-width="1"/>
+  <text class="mono" x="48" y="24" font-size="11" letter-spacing="3" fill="#777777">INTERACTIVE SYSTEM · TIC-TAC-TOE</text>
+  <text class="mono" x="952" y="24" font-size="11" letter-spacing="3" text-anchor="end" fill="#777777">CPU VS VISITOR</text>
+  <g class="mono">
+    <text x="48" y="74" font-size="16" font-weight="700" fill="#333333">YOUR TURN — PLAY X</text>
+    <text x="48" y="104" font-size="12" fill="#777777">last: None</text>
+    <text x="48" y="128" font-size="12" fill="#777777">moves played: 0</text>
+    <text x="48" y="160" font-size="12" fill="#9A9A9A">Click any open number</text>
+    <text x="48" y="180" font-size="12" fill="#9A9A9A">below to play a move</text>
+    <text x="48" y="200" font-size="12" fill="#9A9A9A">via GitHub Issues.</text>
+    <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7Creset&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%60reset%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+      <rect x="48" y="234" width="160" height="32" rx="0" fill="none" stroke="#C4C4C4" stroke-width="1" class="hover-cell"/>
+      <text x="128" y="254" font-size="11.5" letter-spacing="2" text-anchor="middle" fill="#333333">[ RESET GAME ]</text>
+    </a>
+  </g>
+  <!-- Board Grid -->
+  <line x1="480" y1="56" x2="480" y2="266" stroke="#C4C4C4" stroke-width="1"/>
+  <line x1="550" y1="56" x2="550" y2="266" stroke="#C4C4C4" stroke-width="1"/>
+  <line x1="410" y1="126" x2="620" y2="126" stroke="#C4C4C4" stroke-width="1"/>
+  <line x1="410" y1="196" x2="620" y2="196" stroke="#C4C4C4" stroke-width="1"/>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C0&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%600%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="412" y="58" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="445" y="96" font-size="15" text-anchor="middle" fill="#9A9A9A">0</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C1&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%601%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="482" y="58" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="515" y="96" font-size="15" text-anchor="middle" fill="#9A9A9A">1</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C2&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%602%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="552" y="58" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="585" y="96" font-size="15" text-anchor="middle" fill="#9A9A9A">2</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C3&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%603%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="412" y="128" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="445" y="166" font-size="15" text-anchor="middle" fill="#9A9A9A">3</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C4&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%604%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="482" y="128" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="515" y="166" font-size="15" text-anchor="middle" fill="#9A9A9A">4</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C5&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%605%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="552" y="128" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="585" y="166" font-size="15" text-anchor="middle" fill="#9A9A9A">5</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C6&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%606%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="412" y="198" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="445" y="236" font-size="15" text-anchor="middle" fill="#9A9A9A">6</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C7&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%607%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="482" y="198" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="515" y="236" font-size="15" text-anchor="middle" fill="#9A9A9A">7</text>
+  </a>
+  <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cttt%7C8&body=Click%20%27Submit%20new%20issue%27%20to%20play%20move%20%608%60%20in%20%60ttt%60.%20You%20do%20not%20need%20to%20edit%20anything." target="_blank">
+    <rect x="552" y="198" width="66" height="66" fill="#F5F5F5" fill-opacity="0.2" class="hover-cell"/>
+    <text class="mono" x="585" y="236" font-size="15" text-anchor="middle" fill="#9A9A9A">8</text>
+  </a>
+  <g class="mono">
+    <text x="680" y="74" font-size="12" letter-spacing="2" fill="#9A9A9A">QUICK MOVES</text>
+    <line x1="680" y1="88" x2="952" y2="88" stroke="#C4C4C4" stroke-width="1" opacity="0.4"/>
+    <text x="680" y="114" font-size="12" fill="#777777">row 0:  cell 0  |  cell 1  |  cell 2</text>
+    <text x="680" y="142" font-size="12" fill="#777777">row 1:  cell 3  |  cell 4  |  cell 5</text>
+    <text x="680" y="170" font-size="12" fill="#777777">row 2:  cell 6  |  cell 7  |  cell 8</text>
+    <text x="680" y="210" font-size="11" fill="#9A9A9A">ENGINE: MINIMAX DECISION TREE</text>
+    <text x="680" y="230" font-size="11" fill="#9A9A9A">AUTOMATION: GITHUB ACTIONS DISPATCH</text>
+  </g>
+</svg>

@@ -1,0 +1,18 @@
+{
+  "board": [
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    "",
+    ""
+  ],
+  "turn": "X",
+  "winner": null,
+  "moves_count": 0,
+  "last_player": "System",
+  "last_move": null
+}

@@ -1,0 +1,206 @@
+{
+  "name": "Ekansh Jain",
+  "handle": "Anonymous-Ekansh",
+  "links": {
+    "portfolio": "https://iamekansh.netlify.app",
+    "linkedin": "https://www.linkedin.com/in/iamekanshjain/",
+    "email": "helloworldiamekansh@gmail.com"
+  },
+  "header": {
+    "index": "PORTFOLIO \u2014 INDEX N\u00ba 001",
+    "place": "DELHI NCR, IN \u2014 28.53\u00b0 N",
+    "subtitle": "Software Engineer \u00b7 Full Stack \u00b7 Systems \u00b7 Quant Finance",
+    "status": "open to SWE internships (2026/2027) \u00b7 quant research \u00b7 open-source builds",
+    "pillars": [
+      "FULL-STACK SYSTEMS",
+      "QUANT & MARKET SYSTEMS",
+      "DISTRIBUTED ARCHITECTURES"
+    ],
+    "tag": "SHIV NADAR UNIVERSITY"
+  },
+  "whoami": {
+    "lines": [
+      "first-year CS student at Shiv Nadar University building scalable software and market systems.",
+      "crafting systems at the intersection of full-stack engineering, performance, and quantitative finance.",
+      "focused on computational correctness, clean interface design, and high-throughput architectures."
+    ],
+    "rows": [
+      [
+        "FOCUS",
+        "Full-Stack Systems \u00b7 Quant & Market Systems \u00b7 Distributed Infrastructure \u00b7 Performance"
+      ],
+      [
+        "STATUS",
+        "open to SWE internships (2026/2027) \u00b7 quant research roles \u00b7 open-source collaboration"
+      ],
+      [
+        "COMMUNITIES",
+        "Technical Lead @ TEDx Shiv Nadar University \u00b7 ACM Chapter \u00b7 Finvest Club \u00b7 E-Cell"
+      ]
+    ]
+  },
+  "projects": [
+    {
+      "name": "01 / KINEXIS",
+      "desc": [
+        "Campus networking platform architected to eliminate cross-department discovery silos across university ecosystems.",
+        "Engineered with interest-tag filtering, live project discovery feeds, and real-time community engagement channels."
+      ],
+      "tags": "NEXT.JS \u00b7 NODE.JS \u00b7 TYPESCRIPT \u00b7 SUPABASE \u00b7 POSTGRESQL \u00b7 500+ USERS",
+      "repo": "Anonymous-Ekansh/Kinexis"
+    },
+    {
+      "name": "02 / MEALMATE",
+      "desc": [
+        "Cross-platform meal planning application engineered with real-time distributed team state synchronization.",
+        "Features shared collaborative food catalogs, group planning channels, and low-latency operational state updates."
+      ],
+      "tags": "REACT NATIVE \u00b7 EXPO \u00b7 TYPESCRIPT \u00b7 SUPABASE REALTIME \u00b7 ZUSTAND",
+      "repo": "Anonymous-Ekansh/MealMate"
+    },
+    {
+      "name": "03 / POLYINTEL",
+      "desc": [
+        "Market intelligence terminal for Polymarket contracts featuring real-time anomaly detection and volume analytics.",
+        "Built with custom proxy caching infrastructure to bypass CORS and regional ISP API restrictions seamlessly."
+      ],
+      "tags": "NEXT.JS 14 \u00b7 TYPESCRIPT \u00b7 EXPRESS.JS \u00b7 TANSTACK QUERY \u00b7 TAILWINDCSS",
+      "repo": "Anonymous-Ekansh/PolyIntel"
+    }
+  ],
+  "telemetry": {
+    "caption": "TELEMETRY \u2014 WHAT THE REPOSITORIES ARE DOING",
+    "languages": [
+      [
+        "javascript",
+        42
+      ],
+      [
+        "typescript",
+        32
+      ],
+      [
+        "html",
+        16
+      ],
+      [
+        "css",
+        5
+      ],
+      [
+        "python",
+        5
+      ]
+    ],
+    "series_label": "SHIPPING VELOCITY \u00b7 2024 \u2192 2026",
+    "series": [
+      {
+        "x": 440,
+        "y": 232,
+        "label": "'24"
+      },
+      {
+        "x": 488,
+        "y": 210,
+        "label": ""
+      },
+      {
+        "x": 536,
+        "y": 188,
+        "label": "'25"
+      },
+      {
+        "x": 584,
+        "y": 148,
+        "label": ""
+      },
+      {
+        "x": 622,
+        "y": 112,
+        "label": "'26"
+      },
+      {
+        "x": 656,
+        "y": 92,
+        "label": ""
+      }
+    ],
+    "counters": [
+      [
+        "500+",
+        "CAMPUS USERS ENGAGED"
+      ],
+      [
+        "3+",
+        "PRODUCTION PLATFORMS SHIPPED"
+      ],
+      [
+        "18+",
+        "ACADEMIC DEPARTMENTS ACTIVE"
+      ],
+      [
+        "\u221e",
+        "TERMINAL SESSIONS CONCURRENT"
+      ]
+    ]
+  },
+  "experience": [
+    {
+      "when": "2026 \u2013 PRES",
+      "title": "TEDx Shiv Nadar University \u00b7 Technical Lead \u00b7 Delhi NCR",
+      "text": "Directing digital platforms, technical infrastructure, and attendee software systems for campus flagship conferences."
+    },
+    {
+      "when": "2025 \u2013 2026",
+      "title": "ACM & Finvest Student Chapters \u00b7 Core Contributor & Member",
+      "text": "Collaborating on algorithmic problem sets, systems architecture discussions, and quantitative trading simulations."
+    },
+    {
+      "when": "2025 \u2013 PRES",
+      "title": "Shiv Nadar University \u00b7 B.Tech Computer Science & Engineering",
+      "text": "Specializing in core computer science, systems design, operating systems, and quantitative modeling foundations."
+    }
+  ],
+  "stack": [
+    [
+      "LANGUAGES",
+      "C++ \u00b7 TypeScript \u00b7 JavaScript \u00b7 Python \u00b7 SQL \u00b7 HTML/CSS"
+    ],
+    [
+      "FULL STACK",
+      "Next.js \u00b7 React \u00b7 Node.js \u00b7 Express.js \u00b7 React Native \u00b7 Expo"
+    ],
+    [
+      "DATA / CLOUD",
+      "PostgreSQL \u00b7 Supabase \u00b7 Redis \u00b7 REST APIs \u00b7 TanStack Query"
+    ],
+    [
+      "SYSTEMS",
+      "Linux \u00b7 Git & GitHub \u00b7 Docker \u00b7 Shell / Zsh \u00b7 Performance Profiling"
+    ],
+    [
+      "TOOLING",
+      "Neovim \u00b7 Postman \u00b7 Vercel \u00b7 Netlify \u00b7 TailwindCSS \u00b7 Figma"
+    ]
+  ],
+  "focus": {
+    "learning": [
+      "Quantitative trading fundamentals & market microstructure",
+      "Advanced PostgreSQL query planning, indexing, and internal mechanics",
+      "Distributed consensus models and low-latency network architectures"
+    ],
+    "building": [
+      "Real-time market analytics dashboard with live streaming feeds",
+      "Algorithmic peer-matching graphs and routing protocols for Kinexis"
+    ],
+    "exploring": [
+      "Prediction market pricing mechanisms and probability calibration",
+      "High-performance low-latency execution engines in modern C++"
+    ]
+  },
+  "footer": {
+    "status": "STATUS \u2014 SHIPPING",
+    "line": "compiling ideas into high-throughput systems, usually after midnight",
+    "right": "iamekansh.netlify.app  \u00b7  Delhi NCR, IN  \u00b7  \u00a9 2026"
+  }
+}
