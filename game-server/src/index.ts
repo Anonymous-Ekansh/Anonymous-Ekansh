@@ -3,8 +3,8 @@
  *
  * Every tile is rendered from the stored game state on demand, so a profile README only
  * needs <img> tags. Moves are ordinary links, which means they need the abuse control in
- * ./security.ts (fetch metadata, user-agent screen, hashed-IP rate limiting) and the
- * compare-and-swap writes in ./store.ts.
+ * ./security.ts (fetch metadata, user-agent screen, a visitor cookie, a coarse hashed-IP
+ * cap) and the compare-and-swap writes in ./store.ts.
  */
 
 import {
@@ -15,10 +15,24 @@ import {
   initialChess,
   newChess,
   parseChessRow,
+  sameMover,
   type ChessState,
+  type Mover,
 } from "./chesslogic";
 import { playPage } from "./play";
-import { clientIp, hashIp, isBotUa, PROFILE_DEFAULT, RateLimiter, secFetchAllows } from "./security";
+import {
+  clientIp,
+  CountLimiter,
+  hashIp,
+  hashVisitor,
+  isBotUa,
+  newVid,
+  PROFILE_DEFAULT,
+  RateLimiter,
+  readVid,
+  secFetchAllows,
+  vidSetCookie,
+} from "./security";
 import { D1Store, MemoryStore, type StateRow, type StoreLike } from "./store";
 import { chessRecentSvg, chessStatusSvg, chessTileSvg, parseTheme, tttStatusSvg, tttTileSvg, type Theme } from "./svg";
 import {
@@ -58,9 +72,11 @@ interface Ctx {
   salt: string;
 }
 
-/** One move every 5 s per hashed IP; selection clicks get a lighter 1 s gate. */
+/** Per-visitor cooldown: one move every 5 s, selection clicks get a lighter 1 s gate. */
 const moveLimiter = new RateLimiter(5_000);
 const selectLimiter = new RateLimiter(1_000);
+/** Coarse bot cap: 30 moves per hour per hashed IP, however many cookies it presents. */
+const ipMoveCap = new CountLimiter(60 * 60 * 1000, 30);
 
 const NO_STORE = "no-store";
 
@@ -158,6 +174,51 @@ async function commit<T extends object>(
   return row ? ctx.store.cas(kind, json, version, row.version) : ctx.store.insert(kind, json, version);
 }
 
+/* ------------------------------------------------------------------ visitor identity */
+
+interface Visitor {
+  /** The cookie value to set on this response, or null when the request already had one. */
+  vid: string | null;
+  /** Hash of the visitor cookie: the per-visitor limiter key. */
+  visitor: string;
+  /** Hash of the client IP: the coarse cap key and the cookie-less fallback. */
+  ip: string;
+  /** True when the request carried the cookie. */
+  cookie: boolean;
+  /** The pair the chess turn rule compares against. */
+  mover: Mover;
+}
+
+/**
+ * One identity per move request.
+ *
+ * A `vid` cookie is minted when the request has none and set on the response, so the first
+ * click starts a 30-day visitor. Only salted hashes of the cookie and of the IP are used, and
+ * the raw values are never stored or logged. Without the cookie (cookies disabled) the hashed
+ * IP is what identifies the visitor.
+ */
+async function identify(ctx: Ctx, request: Request): Promise<Visitor> {
+  const existing = readVid(request);
+  const vid = existing ?? newVid();
+  const cookie = existing !== null;
+  const visitor = await hashVisitor(vid, ctx.salt);
+  const ip = await hashIp(ctx.ip, ctx.salt, ctx.now());
+  return { vid: cookie ? null : vid, visitor, ip, cookie, mover: { visitor, ip, cookie } };
+}
+
+/** Attaches the new cookie, if this request is the one that minted it. */
+function withVid(response: Response, who: Visitor): Response {
+  if (!who.vid) return response;
+  const stamped = new Response(response.body, response);
+  stamped.headers.append("Set-Cookie", vidSetCookie(who.vid));
+  return stamped;
+}
+
+/** Redirect back to the profile, carrying the visitor cookie when it was just minted. */
+function moveDone(ctx: Ctx, who: Visitor, kind: string, version: number): Response {
+  return withVid(profileRedirect(ctx, kind, version), who);
+}
+
 /* ------------------------------------------------------------------ tic-tac-toe routes */
 
 async function tttTile(ctx: Ctx, i: number, theme: Theme, request: Request): Promise<Response> {
@@ -175,32 +236,34 @@ async function tttClick(ctx: Ctx, i: number, request: Request): Promise<Response
   const pre = preflight(ctx);
   if (pre) return pre;
 
+  const who = await identify(ctx, request);
   const { row, state, version } = await loadTtt(ctx);
   const next = applyVisitorMove(state, i, ctx.rnd);
-  if (next === state) return profileRedirect(ctx, "ttt", version);
+  if (next === state) return moveDone(ctx, who, "ttt", version);
 
-  const limited = await limitResponse(ctx, "move");
+  const limited = await limitResponse(ctx, "move", who);
   if (limited) return limited;
 
   const v = version + 1;
   const ok = await commit(ctx, "ttt", row, next, v);
-  return profileRedirect(ctx, "ttt", ok ? v : version);
+  return moveDone(ctx, who, "ttt", ok ? v : version);
 }
 
 async function tttNew(ctx: Ctx, request: Request): Promise<Response> {
   const pre = preflight(ctx);
   if (pre) return pre;
 
+  const who = await identify(ctx, request);
   const { row, state, version } = await loadTtt(ctx);
   const next = tttStartNewGame(state);
-  if (!next) return profileRedirect(ctx, "ttt", version);
+  if (!next) return moveDone(ctx, who, "ttt", version);
 
-  const limited = await limitResponse(ctx, "move");
+  const limited = await limitResponse(ctx, "move", who);
   if (limited) return limited;
 
   const v = version + 1;
   const ok = await commit(ctx, "ttt", row, next, v);
-  return profileRedirect(ctx, "ttt", ok ? v : version);
+  return moveDone(ctx, who, "ttt", ok ? v : version);
 }
 
 /* ------------------------------------------------------------------ chess routes */
@@ -225,17 +288,24 @@ async function chessClickRoute(ctx: Ctx, sq: string, request: Request): Promise<
   const pre = preflight(ctx);
   if (pre) return pre;
 
+  const who = await identify(ctx, request);
   const { row, state, version } = await loadChess(ctx);
-  const hash = await hashIp(ctx.ip, ctx.salt, ctx.now());
-  const step = chessClick(state, sq, ctx.now(), hash);
-  if (step.action === "ignore" || step.state === state) return profileRedirect(ctx, "chess", version);
+  const step = chessClick(state, sq, ctx.now(), who.mover);
+  if (step.action === "ignore") {
+    // A refused move still clears the stored selection so the next visitor starts clean; it
+    // is not a move and does not spend the cooldown.
+    if (step.state === state) return moveDone(ctx, who, "chess", version);
+    const cleared = version + 1;
+    const committed = await commit(ctx, "chess", row, step.state, cleared);
+    return moveDone(ctx, who, "chess", committed ? cleared : version);
+  }
 
-  const limited = await limitResponse(ctx, step.action === "move" ? "move" : "select");
+  const limited = await limitResponse(ctx, step.action === "move" ? "move" : "select", who);
   if (limited) return limited;
 
   const v = version + 1;
   const ok = await commit(ctx, "chess", row, step.state, v);
-  return profileRedirect(ctx, "chess", ok ? v : version);
+  return moveDone(ctx, who, "chess", ok ? v : version);
 }
 
 /* ------------------------------------------------------------------ JSON API */
@@ -259,22 +329,23 @@ async function apiMove(request: Request, ctx: Ctx): Promise<Response> {
     return json({ ok: false, error: "expected a JSON object" }, 400);
   }
 
-  if (body.game === "ttt") return apiTtt(body, ctx);
-  if (body.game === "chess") return apiChess(body, ctx);
+  const who = await identify(ctx, request);
+  if (body.game === "ttt") return apiTtt(body, ctx, who);
+  if (body.game === "chess") return apiChess(body, ctx, who);
   return json({ ok: false, error: 'game must be "ttt" or "chess"' }, 400);
 }
 
-async function apiTtt(body: Record<string, unknown>, ctx: Ctx): Promise<Response> {
+async function apiTtt(body: Record<string, unknown>, ctx: Ctx, who: Visitor): Promise<Response> {
   const { row, state, version } = await loadTtt(ctx);
 
   if (body.new === true) {
     const next = tttStartNewGame(state);
     if (!next) return json({ ok: false, error: "the current game is still running" }, 409);
-    const limited = await limitResponse(ctx, "move");
+    const limited = await limitResponse(ctx, "move", who);
     if (limited) return limited;
     const v = version + 1;
     if (!(await commit(ctx, "ttt", row, next, v))) return raced();
-    return snapshot(ctx);
+    return withVid(await snapshot(ctx), who);
   }
 
   const raw = body.cell;
@@ -286,7 +357,7 @@ async function apiTtt(body: Record<string, unknown>, ctx: Ctx): Promise<Response
   if (state.over) return json({ ok: false, error: "this game is over — start a new one" }, 409);
   if (state.board[cell] !== null) return json({ ok: false, error: "that tile is already taken" }, 409);
 
-  const limited = await limitResponse(ctx, "move");
+  const limited = await limitResponse(ctx, "move", who);
   if (limited) return limited;
 
   const next = applyVisitorMove(state, cell, ctx.rnd);
@@ -294,20 +365,20 @@ async function apiTtt(body: Record<string, unknown>, ctx: Ctx): Promise<Response
 
   const v = version + 1;
   if (!(await commit(ctx, "ttt", row, next, v))) return raced();
-  return snapshot(ctx);
+  return withVid(await snapshot(ctx), who);
 }
 
-async function apiChess(body: Record<string, unknown>, ctx: Ctx): Promise<Response> {
+async function apiChess(body: Record<string, unknown>, ctx: Ctx, who: Visitor): Promise<Response> {
   const { row, state, version } = await loadChess(ctx);
 
   if (body.new === true) {
     const next = chessNewGame(state);
     if (!next) return json({ ok: false, error: "the current game is still running" }, 409);
-    const limited = await limitResponse(ctx, "move");
+    const limited = await limitResponse(ctx, "move", who);
     if (limited) return limited;
     const v = version + 1;
     if (!(await commit(ctx, "chess", row, next, v))) return raced();
-    return snapshot(ctx);
+    return withVid(await snapshot(ctx), who);
   }
 
   const { from, to } = body;
@@ -316,15 +387,14 @@ async function apiChess(body: Record<string, unknown>, ctx: Ctx): Promise<Respon
   }
   if (from === to) return json({ ok: false, error: "pick a different destination square" }, 400);
 
-  const hash = await hashIp(ctx.ip, ctx.salt, ctx.now());
-  if (state.lastIpHash && state.lastIpHash === hash) {
+  if (sameMover(state, who.mover)) {
     return json({ ok: false, error: "one move per person in a row — wait for another player" }, 409);
   }
 
-  const limited = await limitResponse(ctx, "move");
+  const limited = await limitResponse(ctx, "move", who);
   if (limited) return limited;
 
-  const step = chessMoveFromTo(state, from, to, ctx.now(), hash);
+  const step = chessMoveFromTo(state, from, to, ctx.now(), who.mover);
   if (step.action !== "move") {
     const turn = newChess(state.fen).turn() === "w" ? "white" : "black";
     return json({ ok: false, error: `illegal move — ${turn} to move` }, 409);
@@ -332,7 +402,7 @@ async function apiChess(body: Record<string, unknown>, ctx: Ctx): Promise<Respon
 
   const v = version + 1;
   if (!(await commit(ctx, "chess", row, step.state, v))) return raced();
-  return snapshot(ctx);
+  return withVid(await snapshot(ctx), who);
 }
 
 function raced(): Response {
@@ -371,11 +441,18 @@ function preflight(ctx: Ctx): Response | null {
   return null;
 }
 
-async function limitResponse(ctx: Ctx, kind: "move" | "select"): Promise<Response | null> {
-  const hash = await hashIp(ctx.ip, ctx.salt, ctx.now());
+async function limitResponse(ctx: Ctx, kind: "move" | "select", who: Visitor): Promise<Response | null> {
+  // The cooldown is per visitor cookie; without a cookie the hashed IP stands in.
+  const key = who.cookie ? who.visitor : who.ip;
   const limiter = kind === "move" ? moveLimiter : selectLimiter;
-  if (limiter.allow(`${kind}:${hash}`, ctx.now())) return null;
-  return plain("slow down — one move every 5 seconds", 429, { "Retry-After": "5" });
+  if (!limiter.allow(`${kind}:${key}`, ctx.now())) {
+    return plain("slow down — one move every 5 seconds", 429, { "Retry-After": "5" });
+  }
+  // Selections are free; only real moves spend the coarse hourly IP allowance.
+  if (kind === "move" && !ipMoveCap.allow(who.ip, ctx.now())) {
+    return plain("too many moves from this network — try again later", 429, { "Retry-After": "60" });
+  }
+  return null;
 }
 
 function svgResponse(svg: string, tag: string, request: Request): Response {

@@ -22,6 +22,23 @@ function nextIp(): string {
   return `198.18.${Math.floor(ipSeq / 250)}.${ipSeq % 250}`;
 }
 
+let vidSeq = 0;
+/** A distinct 32-hex visitor id per call, so tests never share a limiter key. */
+function nextVid(): string {
+  vidSeq += 1;
+  return vidSeq.toString(16).padStart(32, "0");
+}
+
+function withCookie(vid: string): Record<string, string> {
+  return { cookie: `vid=${vid}` };
+}
+
+/** Pulls the minted visitor id out of a Set-Cookie header. */
+function mintedVid(res: Response): string {
+  const header = res.headers.get("set-cookie") ?? "";
+  return /(?:^|[;\s])vid=([0-9a-f]{32})(?:;|$)/.exec(header)?.[1] ?? "";
+}
+
 function baseHeaders(extra: Record<string, string> = {}): Record<string, string> {
   return {
     "user-agent": BROWSER,
@@ -187,6 +204,97 @@ describe("router", () => {
       body: JSON.stringify({ game: "ttt", cell: 0 }),
     });
     expect(foreign.status).toBe(403);
+  });
+
+  it("mints a 128-bit visitor cookie on the first click and keeps it", async () => {
+    const store = new MemoryStore();
+    const first = await call("/c/click/e2", { store, ip: "203.0.113.5" });
+    expect(first.status).toBe(302);
+
+    const header = first.headers.get("set-cookie") ?? "";
+    const vid = mintedVid(first);
+    expect(vid).toMatch(/^[0-9a-f]{32}$/); // 128 bits, hex
+    expect(header).toContain("HttpOnly");
+    expect(header).toContain("Secure");
+    expect(header).toContain("SameSite=Lax");
+    expect(header).toContain("Path=/");
+    expect(header).toContain("Max-Age=2592000"); // 30 days
+
+    // A request that already carries the cookie is not handed a new one.
+    const again = await call("/c/click/e2", { store, ip: "203.0.113.5", headers: withCookie(vid) });
+    expect(again.status).toBe(302);
+    expect(again.headers.get("set-cookie")).toBeNull();
+  });
+
+  it("keeps two cookies on one IP independent and blocks a repeat move", async () => {
+    const store = new MemoryStore();
+    const ip = "203.0.113.77";
+    const t0 = 1_700_003_000_000;
+    const other = nextVid();
+
+    // First visit: no cookie yet, so this click also mints one.
+    const first = await call("/c/click/e2", { store, ip, now: t0 });
+    expect(first.status).toBe(302);
+    const mine = mintedVid(first);
+    expect(mine).toMatch(/^[0-9a-f]{32}$/);
+
+    expect((await call("/c/click/e4", { store, ip, now: t0 + 1_000, headers: withCookie(mine) })).status).toBe(302);
+
+    // Only hashes reach storage; the cookie value itself never does.
+    const stored = (await store.read("chess"))?.json ?? "";
+    expect(stored).toContain("lastMoveByVisitor");
+    expect(stored).not.toContain(mine);
+
+    // The same cookie cannot answer its own move.
+    expect((await call("/c/click/e7", { store, ip, now: t0 + 2_000, headers: withCookie(mine) })).status).toBe(302);
+    expect((await call("/c/click/e5", { store, ip, now: t0 + 2_500, headers: withCookie(mine) })).status).toBe(302);
+    expect(await (await call("/c/status.svg", { store })).text()).toContain("last: e4");
+
+    // A different cookie on the same IP can answer.
+    expect((await call("/c/click/e7", { store, ip, now: t0 + 3_000, headers: withCookie(other) })).status).toBe(302);
+    expect((await call("/c/click/e5", { store, ip, now: t0 + 3_500, headers: withCookie(other) })).status).toBe(302);
+    const recent = await (await call("/c/recent.svg", { store })).text();
+    expect(recent).toContain("e4");
+    expect(recent).toContain("e5");
+
+    // The cooldown is per cookie: the first visitor is throttled on its own clock.
+    expect((await call("/c/click/g1", { store, ip, now: t0 + 4_000, headers: withCookie(mine) })).status).toBe(302);
+    const throttled = await call("/c/click/f3", { store, ip, now: t0 + 4_500, headers: withCookie(mine) });
+    expect(throttled.status).toBe(429);
+    expect(throttled.headers.get("retry-after")).toBe("5");
+
+    // ...and the move lands once the five seconds have passed.
+    expect((await call("/c/click/f3", { store, ip, now: t0 + 7_000, headers: withCookie(mine) })).status).toBe(302);
+    expect(await (await call("/c/status.svg", { store })).text()).toContain("Nf3");
+  });
+
+  it("caps one IP at 30 moves per hour even with a fresh cookie each time", async () => {
+    const store = new MemoryStore();
+    const ip = "203.0.113.240";
+    let now = 1_700_004_000_000;
+    const statuses: number[] = [];
+
+    for (let i = 0; i < 34; i += 1) {
+      const snap = (await (await call("/api/state", { store, ip, now })).json()) as {
+        ttt: { over: boolean; board: (string | null)[] };
+      };
+      const cell = snap.ttt.board.findIndex((c) => c === null);
+      const payload = snap.ttt.over ? { game: "ttt", new: true } : { game: "ttt", cell };
+      const res = await call("/api/move", {
+        store,
+        ip,
+        now,
+        method: "POST",
+        headers: { "content-type": "application/json", origin: "https://arena.test", ...withCookie(nextVid()) },
+        body: JSON.stringify(payload),
+      });
+      statuses.push(res.status);
+      now += 1_000;
+    }
+
+    expect(statuses.slice(0, 30).every((s) => s === 200)).toBe(true);
+    expect(statuses[30]).toBe(429);
+    expect(statuses[33]).toBe(429);
   });
 
   it("404s anything else and sends / to /play", async () => {

@@ -37,8 +37,45 @@ export interface ChessState {
   game: number;
   record: ChessRecord;
   result: string | null;
-  lastIpHash: string | null;
+  /** Salted hash of the cookie of whoever moved last. */
+  lastMoveByVisitor: string | null;
+  /** Salted hash of that mover's IP; only consulted when a request arrives with no cookie. */
+  lastMoveByIp: string | null;
   version: number;
+}
+
+/**
+ * Who is trying to move. Both fields are salted SHA-256 prefixes, so the raw cookie value and
+ * the raw address never leave the request.
+ */
+export interface Mover {
+  /** Hash of the visitor cookie. Always present: the route mints one when the request has none. */
+  visitor: string;
+  /** Hash of the client IP. */
+  ip: string;
+  /** True when the request carried the cookie, so only `visitor` identifies it. */
+  cookie: boolean;
+}
+
+/**
+ * The "no two consecutive chess moves" rule.
+ *
+ * A visitor that presents the cookie is identified by that cookie alone, so two people behind
+ * one address can still alternate. Without the cookie the hashed IP stands in, which is the
+ * documented fallback for browsers that refuse cookies.
+ */
+export function sameMover(state: ChessState, mover: Mover | null): boolean {
+  if (!mover) return false;
+  if (state.lastMoveByVisitor === mover.visitor) return true;
+  return !mover.cookie && state.lastMoveByIp === mover.ip;
+}
+
+function moverStamp(
+  state: ChessState,
+  mover: Mover | null,
+): Pick<ChessState, "lastMoveByVisitor" | "lastMoveByIp"> {
+  if (!mover) return { lastMoveByVisitor: state.lastMoveByVisitor, lastMoveByIp: state.lastMoveByIp };
+  return { lastMoveByVisitor: mover.visitor, lastMoveByIp: mover.ip };
 }
 
 export type ChessAction = "select" | "move" | "deselect" | "ignore" | "reset";
@@ -57,7 +94,8 @@ export function initialChess(): ChessState {
     game: 1,
     record: { white: 0, black: 0, draw: 0 },
     result: null,
-    lastIpHash: null,
+    lastMoveByVisitor: null,
+    lastMoveByIp: null,
     version: 0,
   };
 }
@@ -115,7 +153,7 @@ export function chessOutcome(chess: Chess): Outcome {
 }
 
 /** Resets the board after mate/stalemate/draw and folds the result into the record. */
-export function finishGame(state: ChessState, chess: Chess, ipHash: string | null): ChessState {
+export function finishGame(state: ChessState, chess: Chess, mover: Mover | null): ChessState {
   const outcome = chessOutcome(chess);
   const record: ChessRecord = { ...state.record };
   if (outcome.kind === "white") record.white += 1;
@@ -131,7 +169,7 @@ export function finishGame(state: ChessState, chess: Chess, ipHash: string | nul
     game: state.game + 1,
     record,
     result: `${head} · ${outcome.label}`,
-    lastIpHash: ipHash,
+    ...moverStamp(state, mover),
   };
 }
 
@@ -154,13 +192,13 @@ function activeSelection(state: ChessState, chess: Chess, now: number): { sq: st
  *  - another own piece: move the selection
  *  - anything else: ignore
  */
-export function chessClick(state: ChessState, sq: string, now: number, ipHash: string | null): ChessStep {
+export function chessClick(state: ChessState, sq: string, now: number, mover: Mover | null): ChessStep {
   if (!isSquare(sq)) return { state, action: "ignore" };
 
   const chess = newChess(state.fen);
   if (chess.isGameOver()) {
     // A previous move ended the game but the reset never landed; finish it now.
-    return { state: finishGame(state, chess, ipHash), action: "reset" };
+    return { state: finishGame(state, chess, mover), action: "reset" };
   }
 
   const turn = chess.turn();
@@ -180,8 +218,8 @@ export function chessClick(state: ChessState, sq: string, now: number, ipHash: s
 
   const target = targetsFrom(chess, sel.sq).find((m) => m.to === sq);
   if (target) {
-    // One move per person in a row: the same hashed IP cannot play both colours.
-    if (ipHash && state.lastIpHash === ipHash) {
+    // One move per person in a row: the same visitor cannot play both colours.
+    if (sameMover(state, mover)) {
       return { state: { ...state, selected: null }, action: "ignore" };
     }
     try {
@@ -192,9 +230,9 @@ export function chessClick(state: ChessState, sq: string, now: number, ipHash: s
         selected: null,
         last: { from: mv.from, to: mv.to, san: mv.san },
         recent: [...state.recent, mv.san].slice(-10),
-        lastIpHash: ipHash,
+        ...moverStamp(state, mover),
       };
-      if (chess.isGameOver()) return { state: finishGame(next, chess, ipHash), action: "move" };
+      if (chess.isGameOver()) return { state: finishGame(next, chess, mover), action: "move" };
       return { state: next, action: "move" };
     } catch {
       return { state: { ...state, selected: null }, action: "ignore" };
@@ -214,21 +252,21 @@ export function chessMoveFromTo(
   from: string,
   to: string,
   now: number,
-  ipHash: string | null,
+  mover: Mover | null,
 ): ChessStep {
   if (!isSquare(from) || !isSquare(to) || from === to) return { state, action: "ignore" };
 
   const chess = newChess(state.fen);
-  if (chess.isGameOver()) return { state: finishGame(state, chess, ipHash), action: "reset" };
+  if (chess.isGameOver()) return { state: finishGame(state, chess, mover), action: "reset" };
 
   let working = state;
   const sel = activeSelection(state, chess, now);
   if (!sel || sel.sq !== from) {
-    const step = chessClick(state, from, now, ipHash);
+    const step = chessClick(state, from, now, mover);
     if (step.action !== "select") return step;
     working = step.state;
   }
-  return chessClick(working, to, now, ipHash);
+  return chessClick(working, to, now, mover);
 }
 
 /** Clears the result banner after a game ended (the board itself already reset). */
@@ -266,7 +304,7 @@ export function normalizeChess(raw: unknown, version: number): ChessState {
   }
 
   const rec = (r.record ?? {}) as Record<string, unknown>;
-  const rawHash = typeof r.lastIpHash === "string" ? r.lastIpHash : "";
+  const hashOf = (v: unknown): string | null => (typeof v === "string" && /^[0-9a-f]{20}$/.test(v) ? v : null);
 
   return {
     fen,
@@ -280,7 +318,9 @@ export function normalizeChess(raw: unknown, version: number): ChessState {
       draw: clampInt(rec.draw, 0),
     },
     result: sanitizeText(r.result),
-    lastIpHash: /^[0-9a-f]{20}$/.test(rawHash) ? rawHash : null,
+    lastMoveByVisitor: hashOf(r.lastMoveByVisitor),
+    // `lastIpHash` is the pre-cookie field name and held an IP hash, so it maps to the IP slot.
+    lastMoveByIp: hashOf(r.lastMoveByIp) ?? hashOf(r.lastIpHash),
     version,
   };
 }

@@ -21,7 +21,7 @@ VALUES (
 INSERT OR IGNORE INTO state (kind, json, version, updated_at)
 VALUES (
   'chess',
-  '{"fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","selected":null,"last":null,"recent":[],"game":1,"record":{"white":0,"black":0,"draw":0},"result":null,"lastIpHash":null,"version":1}',
+  '{"fen":"rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1","selected":null,"last":null,"recent":[],"game":1,"record":{"white":0,"black":0,"draw":0},"result":null,"lastMoveByVisitor":null,"lastMoveByIp":null,"version":1}',
   1,
   0
 );

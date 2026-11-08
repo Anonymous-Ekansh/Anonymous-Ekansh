@@ -25,9 +25,10 @@ npx wrangler deploy                                       # prints https://arena
 `DB` binding declared in `wrangler.toml`. Deploying without the `database_id` filled in fails
 fast rather than serving read-only defaults.
 
-Optional secret (recommended): `npx wrangler secret put RATE_SALT`. It salts the IP hash used
-for rate limiting. Without it the Worker uses a fixed published salt, which still means no raw
-IP is ever stored, but it is not a secret. No secrets are in this repo.
+Optional secret (recommended): `npx wrangler secret put RATE_SALT`. It salts the cookie and IP
+hashes used for rate limiting. Without it the Worker uses a fixed published salt, which still
+means no raw IP or cookie value is ever stored, but it is not a secret. No secrets are in this
+repo.
 
 Then, from the repository root:
 
@@ -100,13 +101,18 @@ hand back a cached profile page.
    browsers) the request is allowed but still rate limited.
 2. **User agent screen.** Crawlers, unfurlers, link previews, monitoring probes and HTTP
    clients are rejected; a missing or 11-character UA counts as a bot.
-3. **Hashed IP rate limit.** `CF-Connecting-IP` is salted with `RATE_SALT` and the UTC day,
-   hashed with SHA-256, truncated to 20 hex characters, and used as the limiter key. The raw
-   address is never stored or logged. One move per 5 seconds; selection clicks get 1 second.
-   The limiter map is per isolate and bounded.
-4. **One move per person in a row (chess).** The last mover's hash is stored in the chess
-   row, so the same visitor cannot play both White and Black in a row. Another visitor can.
-5. **Strict parameters.** `/^[0-8]$/` and `/^[a-h][1-8]$/` before any work; nothing from a
+3. **Visitor cookie.** The first move click mints `vid`: 128 random bits, sent as
+   `Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000` (30 days) from the Worker origin.
+   Only its salted SHA-256 prefix (20 hex characters) is ever used or stored, so one person is
+   one visitor even behind a shared address.
+4. **Per-visitor cooldown and the chess turn rule.** Both key on that hash: one move per 5
+   seconds (selection clicks get 1 second), and the last mover's hash is stored in the chess
+   row so the same visitor cannot play both White and Black in a row. A second cookie on the
+   same address still can.
+5. **Hashed-IP bot cap.** The only IP-based limit: 30 moves per hour per salted, daily-rotating
+   `CF-Connecting-IP` hash. Normal play behind NAT never reaches it. When the cookie is absent
+   (cookies disabled) the hashed IP also stands in for the cooldown and the turn rule.
+6. **Strict parameters.** `/^[0-8]$/` and `/^[a-h][1-8]$/` before any work; nothing from a
    query string or header is echoed into a tile (status text is generated, XML is escaped).
    The `Referer` is never read.
 
@@ -150,8 +156,9 @@ npm run typecheck   # tsc --noEmit
 
 Covers: win / loss / draw / taken tile / click after game over, legal and illegal moves,
 wrong colour, selection expiry, promotion, checkmate, stalemate, new game after a result, the
-same-IP rule, the 5-second window, the UA and fetch-metadata screens, ETag 304, the 302 to the
-profile, an `<img>` embed rejection, and the JSON API.
+visitor cookie, two cookies alternating on one IP, the same-cookie turn rule, the 5-second
+cooldown, the 30-moves-per-hour IP cap, the UA and fetch-metadata screens, ETag 304, the 302 to
+the profile, an `<img>` embed rejection, and the JSON API.
 
 ## Notes and limits
 
