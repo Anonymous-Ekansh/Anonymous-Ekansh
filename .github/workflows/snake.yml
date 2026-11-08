@@ -8,6 +8,10 @@ on:
     branches:
       - main
 
+concurrency:
+  group: snake
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,13 +22,13 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Generate Snake SVG
+      - name: Generate Snake SVGs
         uses: Platane/snk/svg-only@v3
         with:
           github_user_name: ${{ github.repository_owner }}
           outputs: |
-            dist/github-contribution-grid-snake.svg
-            dist/github-contribution-grid-snake-dark.svg?palette=github-dark
+            dist/github-contribution-grid-snake.svg?color_snake=000000&color_dots=ebedf0,c4c4c4,9a9a9a,666666,333333
+            dist/github-contribution-grid-snake-dark.svg?color_snake=ffffff&color_dots=161b22,2c2c2c,444444,777777,aaaaaa
 
       - name: Push to Output Branch
         uses: crazy-max/ghaction-github-pages@v4

@@ -5,6 +5,7 @@ Supports GitHub Actions issue dispatch and local execution.
 """
 
 import argparse
+import os
 import sys
 from pathlib import Path
 from games.ttt import TicTacToe
@@ -36,6 +37,12 @@ def main():
     parser.add_argument("--render-all", action="store_true", help="Render all game SVGs without playing a move")
 
     args = parser.parse_args()
+
+    # Workflow escape hatch: TITLE="admin|render" re-renders both boards without a move.
+    title_env = os.environ.get("TITLE", "").strip()
+    if title_env == "admin|render":
+        args.render_all = True
+
     base_dir = Path(__file__).resolve().parent.parent
     assets_dir = base_dir / "assets"
 
@@ -82,6 +89,7 @@ def main():
             chess.write_assets(assets_dir)
 
     elif args.render_all or not (args.game or args.issue_title):
+        print(f"[games.run] admin render (EVENT_NAME={os.environ.get('EVENT_NAME', 'local')})")
         print("[games.run] Rendering all game SVGs...")
         ttt.write_assets(assets_dir)
         chess.write_assets(assets_dir)

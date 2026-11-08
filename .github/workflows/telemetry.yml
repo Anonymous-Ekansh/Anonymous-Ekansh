@@ -5,6 +5,10 @@ on:
     - cron: "0 6 * * *"
   workflow_dispatch:
 
+concurrency:
+  group: telemetry
+  cancel-in-progress: true
+
 jobs:
   telemetry:
     runs-on: ubuntu-latest
@@ -20,16 +24,16 @@ jobs:
         with:
           python-version: "3.11"
 
-      - name: Run Telemetry Refresh & Build Assets
+      - name: Refresh Telemetry & Rebuild Panels
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           python tools/telemetry.py
 
-      - name: Commit & Push Asset Changes
+      - name: Commit & Push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add profile.json assets/
-          git commit -m "chore(telemetry): auto-refresh telemetry and rebuild SVGs [skip ci]" || echo "No changes to commit"
-          git push origin main
+          git add assets/telemetry.json assets/*.svg assets/dark/*.svg
+          git diff --cached --quiet || git commit -m "chore(telemetry): refresh live data and rebuild panels [skip ci]"
+          git push
