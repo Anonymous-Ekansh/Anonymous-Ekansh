@@ -110,20 +110,17 @@ def wrap(height: int, aria_label: str, body: str, palette: dict, extra_css: str 
 
 
 def build_header(data: dict, palette: dict) -> str:
-    """Builds top editorial header panel."""
+    """Builds top editorial header panel (1000x400)."""
     h = data.get("header", {})
-    name = data.get("name", "Ekansh Jain")
+    name = "Ekansh Jain"
     index = h.get("index", "PORTFOLIO — INDEX Nº 001")
-    place = h.get("place", "DELHI NCR, IN — 28.53° N")
-    subtitle = h.get("subtitle", "")
-    status = h.get("status", "")
-    pillars = h.get("pillars", [])
-    tag = h.get("tag", "")
+    place = "INDIA"
+    subtitle = "Full-stack engineer — products people actually need."
+    status = "status ▸ open to SWE internships · early-stage startup roles · product engineering · fintech"
+    pillars = h.get("pillars", ["FULL-STACK SYSTEMS", "APPLIED AI & AGENTS", "QUANT & FINTECH"])
+    tag = h.get("tag", "B.TECH CS")
 
     pillars_str = "  ·  ".join(pillars)
-
-    # Approximate text width for cursor placement (around 72px font, ~44px per char)
-    cursor_x = 48 + int(len(name) * 44.5)
 
     body = f"""  <!-- Top Header Rule -->
   <line class="draw {delay(1)}" x1="48" y1="58" x2="952" y2="58" stroke="{palette['rule']}" stroke-width="1"/>
@@ -132,49 +129,56 @@ def build_header(data: dict, palette: dict) -> str:
     <text class="mono" fill="{palette['muted']}" x="952" y="44" font-size="11" letter-spacing="3.5" text-anchor="end">{xml_escape(place)}</text>
   </g>
 
-  <!-- Large Editorial Title with Blinking Block Cursor -->
+  <!-- Large Editorial Title with Rise Animation -->
   <g class="rise {delay(2)}">
-    <text fill="{palette['bone']}" class="mono" x="46" y="168" font-size="72" font-weight="600" letter-spacing="-2">{xml_escape(name)}</text>
-    <rect class="cursor" x="{cursor_x}" y="112" width="18" height="60" fill="{palette['accent']}"/>
+    <text fill="{palette['bone']}" class="mono" x="46" y="174" font-size="84" font-weight="600" letter-spacing="-3">{xml_escape(name)}</text>
   </g>
 
   <!-- Subtitle -->
   <g class="fade {delay(3)}">
-    <text fill="{palette['muted']}" class="mono" x="48" y="212" font-size="18.5" letter-spacing="0.5">{xml_escape(subtitle)}</text>
+    <text fill="{palette['muted']}" class="mono" x="48" y="216" font-size="19" letter-spacing="0.2">{xml_escape(subtitle)}</text>
   </g>
 
-  <!-- Focus and Status Lines -->
+  <!-- Status row and prompt with blinking block cursor -->
   <g class="fade {delay(4)}">
-    <text fill="{palette['dim']}" class="mono" x="48" y="264" font-size="12.5" letter-spacing="1">focus  ▸</text>
-    <text fill="{palette['accent']}" class="mono" x="128" y="264" font-size="12.5" letter-spacing="1">{xml_escape(pillars_str.lower())}</text>
+    <text fill="{palette['accent']}" class="mono" x="48" y="268" font-size="12.5" letter-spacing="0.5">{xml_escape(status)}</text>
   </g>
   <g class="fade {delay(5)}">
-    <text fill="{palette['dim']}" class="mono" x="48" y="292" font-size="12.5" letter-spacing="1">status ▸</text>
-    <text fill="{palette['bone']}" class="mono" x="128" y="292" font-size="12.5" letter-spacing="1">{xml_escape(status)}</text>
+    <text fill="{palette['dim']}" class="mono" x="48" y="298" font-size="13">~/ekansh $</text>
+    <rect class="cursor" x="146" y="284" width="9" height="17" fill="{palette['accent']}"/>
   </g>
 
-  <!-- Bottom Divider Rule & Pillars Meta -->
-  <line class="draw {delay(6)}" x1="48" y1="334" x2="952" y2="334" stroke="{palette['rule']}" stroke-width="1"/>
+  <!-- Bottom Divider Rule at y=342 & Pillars Row -->
+  <line class="draw {delay(6)}" x1="48" y1="342" x2="952" y2="342" stroke="{palette['rule']}" stroke-width="1"/>
   <g class="fade {delay(7)}">
-    <text fill="{palette['muted']}" class="mono" x="48" y="364" font-size="11.5" letter-spacing="3">{xml_escape(pillars_str)}</text>
-    <text fill="{palette['muted']}" class="mono" x="952" y="364" font-size="11.5" letter-spacing="3" text-anchor="end">{xml_escape(tag)}</text>
+    <text fill="{palette['muted']}" class="mono" x="48" y="374" font-size="11.5" letter-spacing="3">{xml_escape(pillars_str)}</text>
+    <text fill="{palette['muted']}" class="mono" x="952" y="374" font-size="11.5" letter-spacing="3" text-anchor="end">{xml_escape(tag)}</text>
   </g>"""
-    return wrap(390, f"{name} — {subtitle}", body, palette)
+    return wrap(400, f"{name} — {subtitle}", body, palette)
 
 
-def build_section_divider(num_str: str, title: str, path_str: str, palette: dict) -> str:
-    """Builds a section divider panel (s01..s07)."""
-    # Calculate line coordinates based on text widths
-    line_x1 = 48 + 80 + len(title) * 15 + 16
-    line_x2 = 952 - len(path_str) * 8.5 - 16
+def build_section_divider(num_str: str, name: str, palette: dict) -> str:
+    """
+    Builds a section divider panel s01..s07 (1000x92):
+    - ghost number ("01") x=48 y=68 size 52
+    - accent UPPERCASE label x=128 y=58 size 14 letter-spacing 6
+    - right-aligned path "~/01-whoami" at x=952
+    - drawing rule from the end of the label to x=830 at y=53.
+    """
+    label = name.upper()
+    path_str = f"~/{num_str}-{name.lower()}"
+
+    # In monospace font, char width ~ 8.4px, spacing 6px between chars
+    label_width = (len(label) * 8.4) + ((len(label) - 1) * 6)
+    line_x1 = int(128 + label_width + 36)
 
     body = f"""  <g class="fade {delay(1)}">
-    <text class="mono" x="48" y="66" font-size="52" font-weight="700" fill="{palette['ghost']}">{xml_escape(num_str)}</text>
-    <text class="mono tick" x="136" y="56" font-size="14" font-weight="600" fill="{palette['accent']}" letter-spacing="6">{xml_escape(title)}</text>
-    <text class="mono" x="952" y="56" font-size="11" fill="{palette['muted']}" letter-spacing="2" text-anchor="end">{xml_escape(path_str)}</text>
+    <text class="mono" x="48" y="68" font-size="52" font-weight="700" fill="{palette['ghost']}">{xml_escape(num_str)}</text>
+    <text class="mono tick" x="128" y="58" font-size="14" font-weight="600" fill="{palette['accent']}" letter-spacing="6">{xml_escape(label)}</text>
+    <text class="mono" x="952" y="58" font-size="11" fill="{palette['muted']}" letter-spacing="2" text-anchor="end">{xml_escape(path_str)}</text>
   </g>
-  <line class="draw {delay(2)}" x1="{int(line_x1)}" y1="52" x2="{int(line_x2)}" y2="52" stroke="{palette['rule']}" stroke-width="1"/>"""
-    return wrap(92, f"Section {num_str} — {title}", body, palette)
+  <line class="draw {delay(2)}" x1="{line_x1}" y1="53" x2="830" y2="53" stroke="{palette['rule']}" stroke-width="1"/>"""
+    return wrap(92, f"Section {num_str} — {label}", body, palette)
 
 
 def build_whoami(data: dict, palette: dict) -> str:
@@ -463,19 +467,19 @@ def build_all(profile_path: Path, output_dir: Path) -> None:
     # Panel definitions: (filename, generator_func)
     panels = [
         ("header.svg", lambda p: build_header(data, p)),
-        ("s01.svg", lambda p: build_section_divider("01", "WHOAMI", "~/01-whoami", p)),
+        ("s01.svg", lambda p: build_section_divider("01", "whoami", p)),
         ("whoami.svg", lambda p: build_whoami(data, p)),
-        ("s02.svg", lambda p: build_section_divider("02", "PROJECTS", "~/02-projects", p)),
+        ("s02.svg", lambda p: build_section_divider("02", "projects", p)),
         ("projects.svg", lambda p: build_projects(data, p)),
-        ("s03.svg", lambda p: build_section_divider("03", "TELEMETRY", "~/03-telemetry", p)),
+        ("s03.svg", lambda p: build_section_divider("03", "arena", p)),
+        ("s04.svg", lambda p: build_section_divider("04", "telemetry", p)),
         ("telemetry.svg", lambda p: build_telemetry(data, p)),
-        ("s04.svg", lambda p: build_section_divider("04", "EXPERIENCE", "~/04-experience", p)),
+        ("s05.svg", lambda p: build_section_divider("05", "route", p)),
         ("experience.svg", lambda p: build_experience(data, p)),
-        ("s05.svg", lambda p: build_section_divider("05", "STACK", "~/05-stack", p)),
+        ("s06.svg", lambda p: build_section_divider("06", "stack", p)),
         ("stack.svg", lambda p: build_stack(data, p)),
-        ("s06.svg", lambda p: build_section_divider("06", "FOCUS", "~/06-focus", p)),
+        ("s07.svg", lambda p: build_section_divider("07", "focus", p)),
         ("focus.svg", lambda p: build_focus(data, p)),
-        ("s07.svg", lambda p: build_section_divider("07", "INTERACTIVE", "~/07-interactive", p)),
         ("footer.svg", lambda p: build_footer(data, p)),
     ]
 

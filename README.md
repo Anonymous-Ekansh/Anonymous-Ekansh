@@ -2,12 +2,9 @@
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/header.svg"/><img src="assets/header.svg" alt="Ekansh Jain"/></picture>
 
-<p align="center">
-  <a href="https://iamekansh.netlify.app"><code>[ PORTFOLIO ]</code></a> &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://www.linkedin.com/in/iamekanshjain/"><code>[ LINKEDIN ]</code></a> &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="mailto:helloworldiamekansh@gmail.com"><code>[ EMAIL ]</code></a> &nbsp;&nbsp;·&nbsp;&nbsp;
-  <a href="https://github.com/Anonymous-Ekansh"><code>[ GITHUB ]</code></a>
-</p>
+<a href="https://iamekansh.netlify.app"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/PORTFOLIO-0d1117?style=flat-square&logoColor=ffffff"/><img src="https://img.shields.io/badge/PORTFOLIO-ffffff?style=flat-square&logoColor=000000" alt="Portfolio"/></picture></a>
+<a href="https://www.linkedin.com/in/iamekanshjain/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/LINKEDIN-0d1117?style=flat-square&logo=linkedin&logoColor=ffffff"/><img src="https://img.shields.io/badge/LINKEDIN-ffffff?style=flat-square&logo=linkedin&logoColor=000000" alt="LinkedIn"/></picture></a>
+<a href="mailto:helloworldiamekansh@gmail.com"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/EMAIL-0d1117?style=flat-square"/><img src="https://img.shields.io/badge/EMAIL-ffffff?style=flat-square" alt="Email"/></picture></a>
 
 </div>
 
@@ -17,27 +14,7 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s02.svg"/><img src="assets/s02.svg" alt="02 — projects"/></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"/><img src="assets/projects.svg" alt="Featured Builds"/></picture>
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s03.svg"/><img src="assets/s03.svg" alt="03 — telemetry"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/telemetry.svg"/><img src="assets/telemetry.svg" alt="Repository Telemetry and Activity"/></picture>
-
-<div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
-    <img alt="Contribution activity animation" src="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
-  </picture>
-</div>
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s04.svg"/><img src="assets/s04.svg" alt="04 — experience"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/experience.svg"/><img src="assets/experience.svg" alt="Leadership and Academics Timeline"/></picture>
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s05.svg"/><img src="assets/s05.svg" alt="05 — stack"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/stack.svg"/><img src="assets/stack.svg" alt="Technical Stack"/></picture>
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s06.svg"/><img src="assets/s06.svg" alt="06 — focus"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/focus.svg"/><img src="assets/focus.svg" alt="Current Focus: Learning, Building, Exploring"/></picture>
-
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s07.svg"/><img src="assets/s07.svg" alt="07 — interactive"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s03.svg"/><img src="assets/s03.svg" alt="03 — arena"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/games/ttt.svg"/><img src="assets/games/ttt.svg" alt="Interactive Tic-Tac-Toe"/></picture>
 
@@ -69,5 +46,25 @@
     <a href="https://github.com/Anonymous-Ekansh/Anonymous-Ekansh/issues/new?title=game%7Cchess%7Creset&body=Click+Submit+new+issue+to+reset+chess"><code>[ RESET ]</code></a>
   </p>
 </div>
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s04.svg"/><img src="assets/s04.svg" alt="04 — telemetry"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/telemetry.svg"/><img src="assets/telemetry.svg" alt="Repository Telemetry and Activity"/></picture>
+
+<div align="center">
+  <picture>
+    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake-dark.svg" />
+    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
+    <img alt="Contribution activity animation" src="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
+  </picture>
+</div>
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s05.svg"/><img src="assets/s05.svg" alt="05 — route"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/experience.svg"/><img src="assets/experience.svg" alt="The Route — Experience and Timeline"/></picture>
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s06.svg"/><img src="assets/s06.svg" alt="06 — stack"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/stack.svg"/><img src="assets/stack.svg" alt="Technical Stack"/></picture>
+
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s07.svg"/><img src="assets/s07.svg" alt="07 — focus"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/focus.svg"/><img src="assets/focus.svg" alt="Current Focus: Learning, Building, Exploring"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"/><img src="assets/footer.svg" alt="Current status"/></picture>
