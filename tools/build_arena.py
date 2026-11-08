@@ -29,6 +29,9 @@ So each rank is a plain run of <a><picture>…</picture></a> inside the cell, wi
 between the tags: GitHub renders inline images that touch as one row, and any whitespace
 becomes a visible gap. Ranks are separated by <br/>.
 
+Both columns carry nowrap: it survives GitHub's sanitiser and pins the cell's minimum width, so
+a narrow viewport scrolls the block instead of rewrapping a rank into six tiles and three.
+
 The block is plain HTML: no <script>, no style attributes, no markers. Nothing is written to
 disk — paste the printed block between the ARENA markers in README.md.
 """
@@ -102,14 +105,14 @@ def build(worker: str) -> str:
     ttt_status = picture(f"{worker}/t/status.svg", TTT_WIDTH, BANNER_HEIGHT, "tic-tac-toe — status")
 
     return f"""<table cellspacing="0" cellpadding="0"><tr>
-<td valign="top" width="{CHESS_WIDTH}" align="left">
+<td valign="top" width="{CHESS_WIDTH}" align="left" nowrap>
 <b><code>COMMUNITY CHESS</code></b> <sub>— click a piece, then a square</sub><br/>
 {status}<br/>
 {chess_rows(worker)}<br/>
 {recent}<br/>
 <a href="{worker}/play">play full-screen</a>
 </td>
-<td valign="top" width="{TTT_WIDTH}" align="center">
+<td valign="top" width="{TTT_WIDTH}" align="center" nowrap>
 <b><code>NO TIME?</code></b><br/>
 <b><code>QUICK TIC-TAC-TOE</code></b><br/>
 {ttt_rows(worker)}<br/>
