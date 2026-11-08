@@ -47,29 +47,92 @@
     {
       "name": "01 / KINEXIS",
       "desc": [
-        "Campus networking platform architected to eliminate cross-department discovery silos across university ecosystems.",
-        "Engineered with interest-tag filtering, live project discovery feeds, and real-time community engagement channels."
+        "Campus networking platform: discover students by stream, batch and interest, follow clubs, find collaborators.",
+        "Live at kinexis.in with 500+ active users; email-to-event ingestion pipeline and request-based encrypted DMs."
       ],
-      "tags": "NEXT.JS · NODE.JS · TYPESCRIPT · SUPABASE · POSTGRESQL · 500+ USERS",
+      "tags": "NEXT.JS · TYPESCRIPT · SUPABASE · POSTGRES · RLS · REALTIME",
       "repo": "Anonymous-Ekansh/Kinexis"
     },
     {
-      "name": "02 / MEALMATE",
+      "name": "02 / TRIALSAATHI",
       "desc": [
-        "Cross-platform meal planning application engineered with real-time distributed team state synchronization.",
-        "Features shared collaborative food catalogs, group planning channels, and low-latency operational state updates."
+        "Voice-first, audit-ready clinical trial management system for Ayurveda and Allopathy research (SIH26046).",
+        "Bilingual eConsent and ePRO, role-based dashboards and a hash-chained cryptographic audit trail."
       ],
-      "tags": "REACT NATIVE · EXPO · TYPESCRIPT · SUPABASE REALTIME · ZUSTAND",
-      "repo": "Anonymous-Ekansh/MealMate"
+      "tags": "NEXT.JS · FASTAPI · SUPABASE · PGTAP · PLAYWRIGHT · SARVAM AI",
+      "repo": "Anonymous-Ekansh/SIH26PatientCaseTaking"
     },
     {
-      "name": "03 / POLYINTEL",
+      "name": "03 / MEDIKIOSK",
       "desc": [
-        "Market intelligence terminal for Polymarket contracts featuring real-time anomaly detection and volume analytics.",
-        "Built with custom proxy caching infrastructure to bypass CORS and regional ISP API restrictions seamlessly."
+        "AI patient case-taking kiosk for Indian OPDs (SIH26047): voice or touch intake in Hindi and English.",
+        "Digitises old records with OCR, flags red-flag symptoms and hands the doctor a structured history."
       ],
-      "tags": "NEXT.JS 14 · TYPESCRIPT · EXPRESS.JS · TANSTACK QUERY · TAILWINDCSS",
+      "tags": "NEXT.JS · FASTAPI · SARVAM ASR/TTS/OCR · GROQ LLMS · AYUSH",
+      "repo": "Anonymous-Ekansh/PatientCaseTakingNew"
+    },
+    {
+      "name": "04 / AGENTIC SUPPORT DESK",
+      "desc": [
+        "Five-agent customer-support system returning traceable ANSWER / CLARIFY / ESCALATE decisions.",
+        "99.54% intent accuracy, 0.0027 calibration error, sub-150ms on CPU with a live agent-trace dashboard."
+      ],
+      "tags": "PYTHON · FASTAPI · ONNX · PGVECTOR · NEXT.JS · NLP",
+      "repo": "Anonymous-Ekansh/NLPSupportSystem"
+    },
+    {
+      "name": "05 / ROOMY",
+      "desc": [
+        "Roommate discovery platform for university students: lifestyle profiles, browsing and mutual interest.",
+        "Replaces random hostel allocation and WhatsApp forwards with compatibility-first matching."
+      ],
+      "tags": "NEXT.JS · TYPESCRIPT · SUPABASE SSR · TAILWIND · VERCEL",
+      "repo": "Anonymous-Ekansh/FindYourRoommate"
+    },
+    {
+      "name": "06 / TEDXSNIOE 2026 WEBSITE",
+      "desc": [
+        "Event website with flexible group registration, tiered pricing and email confirmations.",
+        "Payment desk with UPI QR, screenshot verification and an admin approve / decline workflow."
+      ],
+      "tags": "NEXT.JS · SUPABASE · STORAGE · NODEMAILER · FRAMER MOTION",
+      "repo": "Anonymous-Ekansh/tedxsnioe2026-web"
+    },
+    {
+      "name": "07 / B-CON WEBSITE",
+      "desc": [
+        "Business Conclave site with speaker reveals, sponsor wall, FAQ, countdown and a 3D sponsor globe.",
+        "Built on the T3 stack with in-app payments, S3 presigned uploads and contact flows."
+      ],
+      "tags": "NEXT.JS · TRPC · CHAKRA UI · THREE.JS · AWS S3 · NODEMAILER",
+      "repo": "Anonymous-Ekansh/bcon-website"
+    },
+    {
+      "name": "08 / PORTFOLIO",
+      "desc": [
+        "Personal site: terminal-flavoured hero, skills, projects and contact in plain HTML, CSS and JavaScript.",
+        "Live on Netlify; zero framework, zero build step."
+      ],
+      "tags": "HTML · CSS · JAVASCRIPT · NETLIFY",
+      "repo": "Anonymous-Ekansh/Portfolio"
+    },
+    {
+      "name": "09 / POLYINTEL",
+      "desc": [
+        "Intelligence terminal for live Polymarket contracts: multi-factor scoring, anomaly detection, cross-market correlation.",
+        "Server-side proxy and Node caching layer beat ISP/CORS limits; includes a risk-managed paper-trading portfolio."
+      ],
+      "tags": "NEXT.JS 14 · TYPESCRIPT · EXPRESS · TAILWIND · TANSTACK QUERY · ZUSTAND",
       "repo": "Anonymous-Ekansh/PolyIntel"
+    },
+    {
+      "name": "10 / MEALMATE",
+      "desc": [
+        "Android meal-planning app with real-time group collaboration: shared food catalog and in-app group chat.",
+        "Live activity notifications with sub-second state sync across clients via Supabase Realtime."
+      ],
+      "tags": "REACT NATIVE · EXPO · TYPESCRIPT · SUPABASE · ZUSTAND",
+      "repo": "Anonymous-Ekansh/MealMate"
     }
   ],
   "telemetry": {

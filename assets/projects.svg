@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1000 410" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Projects by Ekansh Jain">
+<svg viewBox="0 0 1000 1130" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Ten projects by Ekansh Jain">
   <style>
     .mono { font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace; }
     .draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 1.4s cubic-bezier(.6,0,.2,1) forwards; }
@@ -53,29 +53,75 @@
     }
   </style>
   <g class="mono">
-    <g class="rise d1" transform="translate(0, 28)">
+    <g class="rise d1" transform="translate(0, 20)">
       <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">01 / KINEXIS</text>
-      <text x="952" y="24" font-size="12" fill="#9A9A9A" letter-spacing="1" text-anchor="end">github.com/Anonymous-Ekansh/Kinexis</text>
-      <text x="48" y="48" font-size="13" fill="#777777">Campus networking platform architected to eliminate cross-department discovery silos across university ecosystems.</text>
-      <text x="48" y="68" font-size="13" fill="#777777">Engineered with interest-tag filtering, live project discovery feeds, and real-time community engagement channels.</text>
-      <text x="48" y="90" font-size="11" fill="#9A9A9A" letter-spacing="1">NEXT.JS · NODE.JS · TYPESCRIPT · SUPABASE · POSTGRESQL · 500+ USERS</text>
-      <line x1="48" y1="106" x2="952" y2="106" stroke="#C4C4C4" stroke-width="1" opacity="0.6"/>
+      <text x="48" y="49" font-size="12" fill="#333333">Campus networking platform: discover students by stream, batch and interest, follow clubs, find collaborators.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Live at kinexis.in with 500+ active users; email-to-event ingestion pipeline and request-based encrypted DMs.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · TYPESCRIPT · SUPABASE · POSTGRES · RLS · REALTIME</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
     </g>
-    <g class="rise d2" transform="translate(0, 150)">
-      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">02 / MEALMATE</text>
-      <text x="952" y="24" font-size="12" fill="#9A9A9A" letter-spacing="1" text-anchor="end">github.com/Anonymous-Ekansh/MealMate</text>
-      <text x="48" y="48" font-size="13" fill="#777777">Cross-platform meal planning application engineered with real-time distributed team state synchronization.</text>
-      <text x="48" y="68" font-size="13" fill="#777777">Features shared collaborative food catalogs, group planning channels, and low-latency operational state updates.</text>
-      <text x="48" y="90" font-size="11" fill="#9A9A9A" letter-spacing="1">REACT NATIVE · EXPO · TYPESCRIPT · SUPABASE REALTIME · ZUSTAND</text>
-      <line x1="48" y1="106" x2="952" y2="106" stroke="#C4C4C4" stroke-width="1" opacity="0.6"/>
+    <g class="rise d2" transform="translate(0, 130)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">02 / TRIALSAATHI</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Voice-first, audit-ready clinical trial management system for Ayurveda and Allopathy research (SIH26046).</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Bilingual eConsent and ePRO, role-based dashboards and a hash-chained cryptographic audit trail.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · FASTAPI · SUPABASE · PGTAP · PLAYWRIGHT · SARVAM AI</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
     </g>
-    <g class="rise d3" transform="translate(0, 272)">
-      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">03 / POLYINTEL</text>
-      <text x="952" y="24" font-size="12" fill="#9A9A9A" letter-spacing="1" text-anchor="end">github.com/Anonymous-Ekansh/PolyIntel</text>
-      <text x="48" y="48" font-size="13" fill="#777777">Market intelligence terminal for Polymarket contracts featuring real-time anomaly detection and volume analytics.</text>
-      <text x="48" y="68" font-size="13" fill="#777777">Built with custom proxy caching infrastructure to bypass CORS and regional ISP API restrictions seamlessly.</text>
-      <text x="48" y="90" font-size="11" fill="#9A9A9A" letter-spacing="1">NEXT.JS 14 · TYPESCRIPT · EXPRESS.JS · TANSTACK QUERY · TAILWINDCSS</text>
-      <line x1="48" y1="106" x2="952" y2="106" stroke="#C4C4C4" stroke-width="1" opacity="0.6"/>
+    <g class="rise d3" transform="translate(0, 240)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">03 / MEDIKIOSK</text>
+      <text x="48" y="49" font-size="12" fill="#333333">AI patient case-taking kiosk for Indian OPDs (SIH26047): voice or touch intake in Hindi and English.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Digitises old records with OCR, flags red-flag symptoms and hands the doctor a structured history.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · FASTAPI · SARVAM ASR/TTS/OCR · GROQ LLMS · AYUSH</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d4" transform="translate(0, 350)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">04 / AGENTIC SUPPORT DESK</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Five-agent customer-support system returning traceable ANSWER / CLARIFY / ESCALATE decisions.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">99.54% intent accuracy, 0.0027 calibration error, sub-150ms on CPU with a live agent-trace dashboard.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">PYTHON · FASTAPI · ONNX · PGVECTOR · NEXT.JS · NLP</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d5" transform="translate(0, 460)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">05 / ROOMY</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Roommate discovery platform for university students: lifestyle profiles, browsing and mutual interest.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Replaces random hostel allocation and WhatsApp forwards with compatibility-first matching.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · TYPESCRIPT · SUPABASE SSR · TAILWIND · VERCEL</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d6" transform="translate(0, 570)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">06 / TEDXSNIOE 2026 WEBSITE</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Event website with flexible group registration, tiered pricing and email confirmations.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Payment desk with UPI QR, screenshot verification and an admin approve / decline workflow.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · SUPABASE · STORAGE · NODEMAILER · FRAMER MOTION</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d7" transform="translate(0, 680)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">07 / B-CON WEBSITE</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Business Conclave site with speaker reveals, sponsor wall, FAQ, countdown and a 3D sponsor globe.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Built on the T3 stack with in-app payments, S3 presigned uploads and contact flows.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS · TRPC · CHAKRA UI · THREE.JS · AWS S3 · NODEMAILER</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d8" transform="translate(0, 790)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">08 / PORTFOLIO</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Personal site: terminal-flavoured hero, skills, projects and contact in plain HTML, CSS and JavaScript.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Live on Netlify; zero framework, zero build step.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">HTML · CSS · JAVASCRIPT · NETLIFY</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d9" transform="translate(0, 900)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">09 / POLYINTEL</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Intelligence terminal for live Polymarket contracts: multi-factor scoring, anomaly detection, cross-market correlation.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Server-side proxy and Node caching layer beat ISP/CORS limits; includes a risk-managed paper-trading portfolio.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NEXT.JS 14 · TYPESCRIPT · EXPRESS · TAILWIND · TANSTACK QUERY · ZUSTAND</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
+    </g>
+    <g class="rise d10" transform="translate(0, 1010)">
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">10 / MEALMATE</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Android meal-planning app with real-time group collaboration: shared food catalog and in-app group chat.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Live activity notifications with sub-second state sync across clients via Supabase Realtime.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">REACT NATIVE · EXPO · TYPESCRIPT · SUPABASE · ZUSTAND</text>
+      <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
     </g>
   </g>
 </svg>

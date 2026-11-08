@@ -253,20 +253,25 @@ def build_whoami(data: dict, palette: dict) -> str:
 
 
 def build_projects(data: dict, palette: dict) -> str:
-    """Builds projects panel and validates line lengths (warning on >122 chars)."""
+    """
+    Builds projects panel: one 110px block per project.
+    - Title "NN / NAME" (17px bold)
+    - Two description lines (12px bone, each <=122 characters)
+    - Tags line (11px muted)
+    - Rule at y=104
+    """
     projects = data.get("projects", [])
     body_parts = ['  <g class="mono">']
 
-    curr_y = 28
+    curr_y = 20
     step = 1
 
     for idx, p in enumerate(projects):
         name = p.get("name", "")
         desc = p.get("desc", [])
         tags = p.get("tags", "")
-        repo = p.get("repo", "")
 
-        # Check line lengths
+        # Check line lengths (<= 122 characters)
         for line_idx, dline in enumerate(desc):
             if len(dline) > 122:
                 print(
@@ -275,30 +280,28 @@ def build_projects(data: dict, palette: dict) -> str:
                 )
 
         body_parts.append(f'    <g class="rise {delay(step)}" transform="translate(0, {curr_y})">')
-        # Title and repo
+        # Title "NN / NAME"
         body_parts.append(f'      <text x="48" y="24" font-size="17" font-weight="700" fill="{palette["bone"]}" letter-spacing="0.8">{xml_escape(name)}</text>')
-        if repo:
-            body_parts.append(f'      <text x="952" y="24" font-size="12" fill="{palette["dim"]}" letter-spacing="1" text-anchor="end">github.com/{xml_escape(repo)}</text>')
 
-        # Desc lines
-        line_offset = 48
-        for dline in desc[:2]:
-            body_parts.append(f'      <text x="48" y="{line_offset}" font-size="13" fill="{palette["muted"]}">{xml_escape(dline)}</text>')
-            line_offset += 20
+        # Two description lines (12px bone)
+        desc_line_1 = desc[0] if len(desc) > 0 else ""
+        desc_line_2 = desc[1] if len(desc) > 1 else ""
+        body_parts.append(f'      <text x="48" y="49" font-size="12" fill="{palette["bone"]}">{xml_escape(desc_line_1)}</text>')
+        body_parts.append(f'      <text x="48" y="68" font-size="12" fill="{palette["bone"]}">{xml_escape(desc_line_2)}</text>')
 
-        # Tags
-        body_parts.append(f'      <text x="48" y="{line_offset + 2}" font-size="11" fill="{palette["dim"]}" letter-spacing="1">{xml_escape(tags)}</text>')
+        # Tags line (11px muted)
+        body_parts.append(f'      <text x="48" y="87" font-size="11" fill="{palette["muted"]}" letter-spacing="0.4">{xml_escape(tags)}</text>')
 
-        # Rule between projects
-        body_parts.append(f'      <line x1="48" y1="{line_offset + 18}" x2="952" y2="{line_offset + 18}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.6"/>')
+        # Rule at y=104
+        body_parts.append(f'      <line x1="48" y1="104" x2="952" y2="104" stroke="{palette["rule"]}" stroke-width="1"/>')
         body_parts.append('    </g>')
 
-        curr_y += 122
+        curr_y += 110
         step += 1
 
     body_parts.append('  </g>')
-    total_height = curr_y + 16
-    return wrap(total_height, f"Projects by {data.get('name', 'Anonymous-Ekansh')}", "\n".join(body_parts), palette)
+    total_height = curr_y + 10
+    return wrap(total_height, f"Ten projects by {data.get('name', 'Ekansh Jain')}", "\n".join(body_parts), palette)
 
 
 def build_telemetry(data: dict, palette: dict) -> str:

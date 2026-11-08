@@ -14,6 +14,19 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s02.svg"/><img src="assets/s02.svg" alt="02 — projects"/></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"/><img src="assets/projects.svg" alt="Featured Builds"/></picture>
 
+<p align="center">
+  <a href="https://github.com/Anonymous-Ekansh/Kinexis">github.com/Anonymous-Ekansh/Kinexis</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/SIH26PatientCaseTaking">github.com/Anonymous-Ekansh/SIH26PatientCaseTaking</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/PatientCaseTakingNew">github.com/Anonymous-Ekansh/PatientCaseTakingNew</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/NLPSupportSystem">github.com/Anonymous-Ekansh/NLPSupportSystem</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/FindYourRoommate">github.com/Anonymous-Ekansh/FindYourRoommate</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/tedxsnioe2026-web">github.com/Anonymous-Ekansh/tedxsnioe2026-web</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/bcon-website">github.com/Anonymous-Ekansh/bcon-website</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/Portfolio">github.com/Anonymous-Ekansh/Portfolio</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/PolyIntel">github.com/Anonymous-Ekansh/PolyIntel</a><br/>
+  <a href="https://github.com/Anonymous-Ekansh/MealMate">github.com/Anonymous-Ekansh/MealMate</a>
+</p>
+
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s03.svg"/><img src="assets/s03.svg" alt="03 — arena"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/games/ttt.svg"/><img src="assets/games/ttt.svg" alt="Interactive Tic-Tac-Toe"/></picture>
