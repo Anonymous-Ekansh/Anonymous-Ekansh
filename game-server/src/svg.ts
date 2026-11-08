@@ -11,7 +11,7 @@ import { escapeXml, isSquare } from "./util";
 
 export type Theme = "light" | "dark";
 
-export const MONO = 'ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace';
+export const MONO = "ui-monospace, SFMono-Regular, Menlo, Consolas, monospace";
 
 export interface Palette {
   bone: string;
@@ -154,6 +154,20 @@ export function chessRecentSvg(state: ChessState, theme: Theme): string {
     open(540, 40, `${line1} — ${line2}`) +
     textLine(1, 16, 11.5, p.bone, line1) +
     textLine(1, 31, 11, p.muted, line2) +
+    "</svg>"
+  );
+}
+
+/** Small outlined button rendered as an SVG so it matches the theme on both colour schemes. */
+export function buttonSvg(kind: "chess" | "ttt", theme: Theme): string {
+  const p = PALETTES[theme];
+  const width = kind === "chess" ? 124 : 92;
+  const label = kind === "chess" ? "PLAY FULL-SCREEN" : "NEW GAME";
+  return (
+    open(width, 26, label) +
+    `<rect x="0.5" y="0.5" width="${width - 1}" height="25" rx="6" fill="none" stroke="${p.rule}" stroke-width="1"/>` +
+    `<text x="${width / 2}" y="16.5" font-family="${MONO}" font-size="9" font-weight="600" ` +
+    `fill="${p.bone}" text-anchor="middle" letter-spacing="0.4">${label}</text>` +
     "</svg>"
   );
 }

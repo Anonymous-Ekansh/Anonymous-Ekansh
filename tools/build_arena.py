@@ -118,6 +118,8 @@ def build(worker: str, variant: str) -> str:
     status = picture(f"{worker}/c/status.svg", 540, 40, "community chess — status")
     recent = picture(f"{worker}/c/recent.svg", 540, 40, "community chess — last five moves")
     ttt_status = picture(f"{worker}/t/status.svg", 320, 40, "tic-tac-toe — status")
+    chess_btn = picture(f"{worker}/c/button.svg", 124, 26, "play full-screen")
+    ttt_btn = picture(f"{worker}/t/button.svg", 92, 26, "new game")
 
     return f"""<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
 <td valign="top" width="62%">
@@ -125,13 +127,13 @@ def build(worker: str, variant: str) -> str:
   {status}<br/>
 {chess_board}<br/>
   {recent}<br/>
-  <a href="{worker}/play">play full-screen</a>
+  <a href="{worker}/play">{chess_btn}</a>
 </td>
 <td valign="top" width="38%">
   <b><code>NO TIME? QUICK TIC-TAC-TOE</code></b><br/>
 {ttt_board}<br/>
   {ttt_status}<br/>
-  <a href="{worker}/t/new">new game</a>
+  <a href="{worker}/t/new">{ttt_btn}</a>
 </td></tr></table>"""
 
 

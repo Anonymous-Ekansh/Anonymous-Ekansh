@@ -156,6 +156,8 @@ describe("router", () => {
     const store = new MemoryStore();
     expect(await (await call("/t/status.svg", { store })).text()).toContain("your move");
     expect(await (await call("/c/recent.svg", { store })).text()).toContain("recent");
+    expect(await (await call("/c/button.svg", { store })).text()).toContain("PLAY FULL-SCREEN");
+    expect(await (await call("/t/button.svg", { store })).text()).toContain("NEW GAME");
 
     const page = await call("/play", { store });
     expect(page.status).toBe(200);

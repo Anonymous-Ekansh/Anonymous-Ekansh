@@ -34,7 +34,7 @@ import {
   vidSetCookie,
 } from "./security";
 import { D1Store, MemoryStore, type StateRow, type StoreLike } from "./store";
-import { chessRecentSvg, chessStatusSvg, chessTileSvg, parseTheme, tttStatusSvg, tttTileSvg, type Theme } from "./svg";
+import { buttonSvg, chessRecentSvg, chessStatusSvg, chessTileSvg, parseTheme, tttStatusSvg, tttTileSvg, type Theme } from "./svg";
 import {
   applyVisitorMove,
   initialTtt,
@@ -134,11 +134,13 @@ export async function route(request: Request, env: Env = {}, deps: Deps = {}): P
   if ((m = /^\/t\/click\/([0-8])$/.exec(path))) return traced(ctx, await tttClick(ctx, Number(m[1]), request));
   if (path === "/t/new") return traced(ctx, await tttNew(ctx, request));
   if (path === "/t/status.svg") return tttStatusImage(ctx, theme, request);
+  if (path === "/t/button.svg") return svgResponse(buttonSvg("ttt", theme), `ttt-button-${theme}`, request);
 
   if ((m = /^\/c\/tile\/([a-h][1-8])\.svg$/.exec(path))) return chessTile(ctx, m[1], theme, request);
   if ((m = /^\/c\/click\/([a-h][1-8])$/.exec(path))) return traced(ctx, await chessClickRoute(ctx, m[1], request));
   if (path === "/c/status.svg") return chessStatusImage(ctx, theme, request);
   if (path === "/c/recent.svg") return chessRecentImage(ctx, theme, request);
+  if (path === "/c/button.svg") return svgResponse(buttonSvg("chess", theme), `chess-button-${theme}`, request);
 
   if (path === "/play") return htmlResponse(playPage(ctx.profile));
   if (path === "/api/state") return snapshot(ctx);
