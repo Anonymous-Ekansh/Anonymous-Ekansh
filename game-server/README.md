@@ -158,12 +158,7 @@ profile, an `<img>` embed rejection, and the JSON API.
 - GitHub serves README images through its Camo proxy, which caches for a while. The ETag makes
   a browser revalidate every time, but Camo's own cache can delay the README by minutes. The
   `/play` page is the instant view; that is why it exists.
-- GitHub's README column is about 830 px of usable width. The arena block splits it 58 / 42: the
-  8 x 52 px chess board (416 px) plus its banners fit the left column, the 3 x 76 px tic-tac-toe
-  board (228 px) fits the right one, and both columns are centred in their cells.
-- Coordinates are drawn inside the corner tiles — file letters along rank 1, rank numbers along
-  the a-file — so the board needs no label column and stays flush.
-- Chess pieces are the **Cburnett** set (the Lichess default), recoloured per theme at render
-  time: `game-server/src/pieces.ts` holds the original 45x45 bodies, `CC BY-SA 3.0`, credited in
-  `ASSETS-LICENSE.md`, in the README footer and on `/play`. No Unicode glyphs are used.
-- Tic-tac-toe marks are original filled brush paths (three variants each, picked by tile index).
+- The board tiles are square, so a `62%` column of an 880 px README (~545 px) holds the 8×44 px
+  board with room to spare, and the 3×72 px tic-tac-toe board fits the `38%` column (~334 px).
+- Chess pieces are drawn for this project — plain paths and primitives in a 44×44 view box,
+  no Unicode glyphs and no font dependency. Released as CC0 / public domain.

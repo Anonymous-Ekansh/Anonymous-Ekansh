@@ -119,11 +119,11 @@ describe("router", () => {
 
     const tile = await call("/c/tile/e4.svg", { store });
     const svg = await tile.text();
-    expect(svg).toContain('width="52"');
+    expect(svg).toContain('width="44"');
     expect(svg).toContain("white p");
 
     const status = await (await call("/c/status.svg", { store })).text();
-    expect(status).toContain("last e4");
+    expect(status).toContain("last: e4");
   });
 
   it("serves the status, recent and play routes", async () => {

@@ -20,18 +20,7 @@ import {
 import { playPage } from "./play";
 import { clientIp, hashIp, isBotUa, PROFILE_DEFAULT, RateLimiter, secFetchAllows } from "./security";
 import { D1Store, MemoryStore, type StateRow, type StoreLike } from "./store";
-import {
-  buttonSvg,
-  chessRecentSvg,
-  chessStatusSvg,
-  chessTileSvg,
-  parseTheme,
-  placeholderSvg,
-  sectionHeaderSvg,
-  tttStatusSvg,
-  tttTileSvg,
-  type Theme,
-} from "./svg";
+import { chessRecentSvg, chessStatusSvg, chessTileSvg, parseTheme, tttStatusSvg, tttTileSvg, type Theme } from "./svg";
 import {
   applyVisitorMove,
   initialTtt,
@@ -77,30 +66,17 @@ const NO_STORE = "no-store";
 
 export default {
   async fetch(request: Request, env: Env): Promise<Response> {
-    return route(request, env);
+    try {
+      return await route(request, env);
+    } catch {
+      return plain("server error", 500);
+    }
   },
 };
 
 /* ------------------------------------------------------------------ router */
 
 export async function route(request: Request, env: Env = {}, deps: Deps = {}): Promise<Response> {
-  try {
-    return await dispatch(request, env, deps);
-  } catch (error) {
-    // A failed read must not become a broken image in someone's profile.
-    console.error("arena request failed", error);
-    if (new URL(request.url).pathname.endsWith(".svg")) {
-      return res(placeholderSvg(), 200, {
-        "Content-Type": "image/svg+xml; charset=utf-8",
-        "Cache-Control": NO_STORE,
-        "X-Content-Type-Options": "nosniff",
-      });
-    }
-    return plain("server error", 500);
-  }
-}
-
-async function dispatch(request: Request, env: Env, deps: Deps): Promise<Response> {
   const url = new URL(request.url);
   const path = trimPath(url.pathname);
   const theme = parseTheme(url.searchParams.get("theme"));
@@ -131,16 +107,11 @@ async function dispatch(request: Request, env: Env, deps: Deps): Promise<Respons
   if ((m = /^\/t\/click\/([0-8])$/.exec(path))) return tttClick(ctx, Number(m[1]), request);
   if (path === "/t/new") return tttNew(ctx, request);
   if (path === "/t/status.svg") return tttStatusImage(ctx, theme, request);
-  if (path === "/t/header.svg") return chrome("ttt", theme, request);
 
   if ((m = /^\/c\/tile\/([a-h][1-8])\.svg$/.exec(path))) return chessTile(ctx, m[1], theme, request);
   if ((m = /^\/c\/click\/([a-h][1-8])$/.exec(path))) return chessClickRoute(ctx, m[1], request);
   if (path === "/c/status.svg") return chessStatusImage(ctx, theme, request);
   if (path === "/c/recent.svg") return chessRecentImage(ctx, theme, request);
-  if (path === "/c/header.svg") return chrome("chess", theme, request);
-
-  if (path === "/btn/play.svg") return svgResponse(() => buttonSvg("PLAY FULL-SCREEN", theme), `btn-play-${theme}`, request);
-  if (path === "/btn/new.svg") return svgResponse(() => buttonSvg("NEW GAME", theme), `btn-new-${theme}`, request);
 
   if (path === "/play") return htmlResponse(playPage(ctx.profile));
   if (path === "/api/state") return snapshot(ctx);
@@ -191,17 +162,12 @@ async function commit<T extends object>(
 
 async function tttTile(ctx: Ctx, i: number, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadTtt(ctx);
-  return svgResponse(() => tttTileSvg(state, i, theme), `ttt-${version}-${theme}-tile-${i}`, request);
+  return svgResponse(tttTileSvg(state, i, theme), `ttt-${version}-${theme}-tile-${i}`, request);
 }
 
 async function tttStatusImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadTtt(ctx);
-  return svgResponse(() => tttStatusSvg(state, theme), `ttt-${version}-${theme}-status`, request);
-}
-
-/** Section header strips: static chrome, no stored state. */
-function chrome(kind: "chess" | "ttt", theme: Theme, request: Request): Response {
-  return svgResponse(() => sectionHeaderSvg(kind, theme), `header-${kind}-${theme}`, request);
+  return svgResponse(tttStatusSvg(state, theme), `ttt-${version}-${theme}-status`, request);
 }
 
 async function tttClick(ctx: Ctx, i: number, request: Request): Promise<Response> {
@@ -241,17 +207,17 @@ async function tttNew(ctx: Ctx, request: Request): Promise<Response> {
 
 async function chessTile(ctx: Ctx, sq: string, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(() => chessTileSvg(state, sq, theme, ctx.now()), `chess-${version}-${theme}-${sq}`, request);
+  return svgResponse(chessTileSvg(state, sq, theme, ctx.now()), `chess-${version}-${theme}-${sq}`, request);
 }
 
 async function chessStatusImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(() => chessStatusSvg(state, theme), `chess-${version}-${theme}-status`, request);
+  return svgResponse(chessStatusSvg(state, theme), `chess-${version}-${theme}-status`, request);
 }
 
 async function chessRecentImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(() => chessRecentSvg(state, theme), `chess-${version}-${theme}-recent`, request);
+  return svgResponse(chessRecentSvg(state, theme), `chess-${version}-${theme}-recent`, request);
 }
 
 async function chessClickRoute(ctx: Ctx, sq: string, request: Request): Promise<Response> {
@@ -412,12 +378,7 @@ async function limitResponse(ctx: Ctx, kind: "move" | "select"): Promise<Respons
   return plain("slow down — one move every 5 seconds", 429, { "Retry-After": "5" });
 }
 
-/**
- * Renders an SVG, and never returns a broken image: an exception produces a small valid
- * placeholder with HTTP 200 and no-store, because GitHub would otherwise show an alt-text
- * icon in the profile and cache it.
- */
-function svgResponse(render: () => string, tag: string, request: Request): Response {
+function svgResponse(svg: string, tag: string, request: Request): Response {
   const etag = `"${tag}"`;
   const headers: Record<string, string> = {
     "Content-Type": "image/svg+xml; charset=utf-8",
@@ -429,18 +390,6 @@ function svgResponse(render: () => string, tag: string, request: Request): Respo
   const inm = request.headers.get("if-none-match");
   if (inm && inm.split(",").some((part) => part.trim() === etag)) {
     return res(null, 304, headers);
-  }
-
-  let svg: string;
-  try {
-    svg = render();
-  } catch (error) {
-    console.error(`svg render failed for ${tag}`, error);
-    return res(placeholderSvg(), 200, {
-      "Content-Type": "image/svg+xml; charset=utf-8",
-      "Cache-Control": NO_STORE,
-      "X-Content-Type-Options": "nosniff",
-    });
   }
   return res(svg, 200, headers);
 }

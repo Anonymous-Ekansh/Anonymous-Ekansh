@@ -13,19 +13,13 @@ Reads WORKER from profile.json -> "worker_url" (no other input, no network).
 The block is plain HTML: no <script>, no style attributes, no markers, so a bot cannot
 rewrite it and a reader can paste it anywhere. Nothing is written to disk.
 
-Layout
-------
-GitHub's README column is about 830 px of usable width, so the split is 58 / 42:
-
-    chess   416 px board (8 x 52)   + 416 px banners, header and buttons in the same column
-    tic-tac  228 px board (3 x 76)  + 228 px banners, header and button
-
 Gap comparison
 --------------
-GitHub's stylesheet gives every table cell 6px vertical and 13px horizontal padding, and an
-attribute cannot override that, so variant (a) always shows dead space between squares.
-Variant (b) joins the anchors with no whitespace at all (`</a><a`) and starts a new line with
-`<br/>`, so squares sit flush. The script scores both and prints the flush one by default.
+GitHub gives every table cell padding, and it also gives adjacent inline images one
+whitespace gap. Variant (a) therefore adds dead space at every interior cell boundary
+(~12 px on GitHub), while variant (b) joins the anchors with no whitespace at all
+(`</a><a`), so its only gaps are the deliberate ones. The script scores both on that
+basis and prints the lower one by default.
 """
 
 from __future__ import annotations
@@ -41,17 +35,8 @@ PROFILE = ROOT / "profile.json"
 FILES = "abcdefgh"
 RANKS = range(8, 0, -1)
 
-CHESS_TILE = 52
-TTT_TILE = 76
-CHESS_BOARD = CHESS_TILE * 8  # 416
-TTT_BOARD = TTT_TILE * 3  # 228
-BAR_H = 28
-HEADER_H = 40
-
 # One padded table cell on GitHub is roughly 12 px wider than the image it holds.
 CELL_GAP_PX = 12
-
-CREDIT = "pieces: Cburnett, CC BY-SA 3.0"
 
 
 def load_worker() -> str:
@@ -68,30 +53,23 @@ def load_worker() -> str:
     return worker
 
 
-def picture(url: str, width: int | None, height: int | None, alt: str) -> str:
+def picture(url: str, width: int, height: int, alt: str) -> str:
     """Light/dark pair, the same pattern the rest of the profile uses."""
-    size = f' width="{width}" height="{height}"' if width and height else ""
     return (
         f'<picture><source media="(prefers-color-scheme: dark)" srcset="{url}?theme=dark"/>'
-        f'<img src="{url}?theme=light"{size} alt="{alt}"/></picture>'
+        f'<img src="{url}?theme=light" width="{width}" height="{height}" alt="{alt}"/></picture>'
     )
 
 
 def chess_tile(worker: str, sq: str) -> str:
-    return (
-        f'<a href="{worker}/c/click/{sq}">'
-        f'{picture(f"{worker}/c/tile/{sq}.svg", CHESS_TILE, CHESS_TILE, sq)}</a>'
-    )
+    return f'<a href="{worker}/c/click/{sq}">{picture(f"{worker}/c/tile/{sq}.svg", 44, 44, sq)}</a>'
 
 
 def ttt_tile(worker: str, cell: int) -> str:
-    return (
-        f'<a href="{worker}/t/click/{cell}">'
-        f'{picture(f"{worker}/t/tile/{cell}.svg", TTT_TILE, TTT_TILE, f"tile {cell + 1}")}</a>'
-    )
+    return f'<a href="{worker}/t/click/{cell}">{picture(f"{worker}/t/tile/{cell}.svg", 72, 72, f"tile {cell}")}</a>'
 
 
-# --- variant (a): one nested table per board (GitHub still pads the cells) ------------
+# --- variant (a): one nested table per board (one padded <td> per square) -------------
 
 def chess_board_table(worker: str) -> str:
     rows = []
@@ -109,7 +87,7 @@ def ttt_board_table(worker: str) -> str:
     return '<table cellpadding="0" cellspacing="0" border="0">' + "".join(rows) + "</table>"
 
 
-# --- variant (b): inline images, no whitespace between anchors -----------------------
+# --- variant (b): inline images, no whitespace between anchors ------------------------
 
 def chess_board_inline(worker: str) -> str:
     rows = ["".join(chess_tile(worker, f + str(rank)) for f in FILES) for rank in RANKS]
@@ -137,29 +115,24 @@ def build(worker: str, variant: str) -> str:
         chess_board = chess_board_inline(worker)
         ttt_board = ttt_board_inline(worker)
 
-    chess_head = picture(f"{worker}/c/header.svg", CHESS_BOARD, HEADER_H, "community chess")
-    ttt_head = picture(f"{worker}/t/header.svg", TTT_BOARD, HEADER_H, "quick tic-tac-toe")
-    status = picture(f"{worker}/c/status.svg", CHESS_BOARD, BAR_H, "community chess — status")
-    recent = picture(f"{worker}/c/recent.svg", CHESS_BOARD, BAR_H, "community chess — last five moves")
-    ttt_status = picture(f"{worker}/t/status.svg", TTT_BOARD, BAR_H, "tic-tac-toe — status")
-    play = picture(f"{worker}/btn/play.svg", None, None, "play full-screen")
-    new = picture(f"{worker}/btn/new.svg", None, None, "new game")
+    status = picture(f"{worker}/c/status.svg", 540, 40, "community chess — status")
+    recent = picture(f"{worker}/c/recent.svg", 540, 40, "community chess — last five moves")
+    ttt_status = picture(f"{worker}/t/status.svg", 320, 40, "tic-tac-toe — status")
 
     return f"""<table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
-<td valign="top" width="58%" align="center">
-{chess_head}<br/>{status}<br/>
+<td valign="top" width="62%">
+  <b><code>COMMUNITY CHESS</code></b> <sub>— click a piece, then a square</sub><br/>
+  {status}<br/>
 {chess_board}<br/>
-{recent}<br/>
-<a href="{worker}/play">{play}</a>
+  {recent}<br/>
+  <a href="{worker}/play">play full-screen</a>
 </td>
-<td valign="middle" width="42%" align="center">
-{ttt_head}<br/>
+<td valign="top" width="38%">
+  <b><code>NO TIME? QUICK TIC-TAC-TOE</code></b><br/>
 {ttt_board}<br/>
-{ttt_status}<br/>
-<a href="{worker}/t/new">{new}</a>
-</td>
-</tr></table>
-<p align="center"><sub>{CREDIT}</sub></p>"""
+  {ttt_status}<br/>
+  <a href="{worker}/t/new">new game</a>
+</td></tr></table>"""
 
 
 def main() -> None:
