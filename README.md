@@ -1,6 +1,6 @@
 <div align="center">
 
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/header.svg"/><img src="assets/header.svg" alt="Ekansh Jain"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/header.svg"/><img src="assets/header.svg" alt="Ekansh Jain — full-stack engineer"/></picture>
 
 <a href="https://iamekansh.netlify.app"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/PORTFOLIO-0d1117?style=flat-square&logoColor=ffffff"/><img src="https://img.shields.io/badge/PORTFOLIO-ffffff?style=flat-square&logoColor=000000" alt="Portfolio"/></picture></a>
 <a href="https://www.linkedin.com/in/iamekanshjain/"><picture><source media="(prefers-color-scheme: dark)" srcset="https://img.shields.io/badge/LINKEDIN-0d1117?style=flat-square&logo=linkedin&logoColor=ffffff"/><img src="https://img.shields.io/badge/LINKEDIN-ffffff?style=flat-square&logo=linkedin&logoColor=000000" alt="LinkedIn"/></picture></a>
@@ -14,21 +14,11 @@
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s02.svg"/><img src="assets/s02.svg" alt="02 — projects"/></picture>
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/projects.svg"/><img src="assets/projects.svg" alt="Featured Builds"/></picture>
 
-<p align="center">
-  <a href="https://github.com/Anonymous-Ekansh/Kinexis">github.com/Anonymous-Ekansh/Kinexis</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/SIH26PatientCaseTaking">github.com/Anonymous-Ekansh/SIH26PatientCaseTaking</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/PatientCaseTakingNew">github.com/Anonymous-Ekansh/PatientCaseTakingNew</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/NLPSupportSystem">github.com/Anonymous-Ekansh/NLPSupportSystem</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/FindYourRoommate">github.com/Anonymous-Ekansh/FindYourRoommate</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/tedxsnioe2026-web">github.com/Anonymous-Ekansh/tedxsnioe2026-web</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/bcon-website">github.com/Anonymous-Ekansh/bcon-website</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/Portfolio">github.com/Anonymous-Ekansh/Portfolio</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/PolyIntel">github.com/Anonymous-Ekansh/PolyIntel</a><br/>
-  <a href="https://github.com/Anonymous-Ekansh/MealMate">github.com/Anonymous-Ekansh/MealMate</a>
-</p>
+<p align="center"><a href="https://github.com/Anonymous-Ekansh/Kinexis">Kinexis</a> · <a href="https://github.com/Anonymous-Ekansh/SIH26PatientCaseTaking">SIH26PatientCaseTaking</a> · <a href="https://github.com/Anonymous-Ekansh/PatientCaseTakingNew">PatientCaseTakingNew</a> · <a href="https://github.com/Anonymous-Ekansh/NLPSupportSystem">NLPSupportSystem</a> · <a href="https://github.com/Anonymous-Ekansh/FindYourRoommate">FindYourRoommate</a> · <a href="https://github.com/Anonymous-Ekansh/tedxsnioe2026-web">tedxsnioe2026-web</a> · <a href="https://github.com/Anonymous-Ekansh/bcon-website">bcon-website</a> · <a href="https://github.com/Anonymous-Ekansh/Portfolio">Portfolio</a> · <a href="https://github.com/Anonymous-Ekansh/PolyIntel">PolyIntel</a> · <a href="https://github.com/Anonymous-Ekansh/MealMate">MealMate</a> · <a href="https://arena.anonymous-ekansh.workers.dev/play">arena</a></p>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s03.svg"/><img src="assets/s03.svg" alt="03 — arena"/></picture>
 
+<!-- ARENA:START -->
 <table width="100%" cellspacing="0" cellpadding="0" border="0"><tr>
 <td valign="top" width="62%">
   <b><code>COMMUNITY CHESS</code></b> <sub>— click a piece, then a square</sub><br/>
@@ -43,25 +33,37 @@
   <picture><source media="(prefers-color-scheme: dark)" srcset="https://arena.anonymous-ekansh.workers.dev/t/status.svg?theme=dark"/><img src="https://arena.anonymous-ekansh.workers.dev/t/status.svg?theme=light" width="320" height="40" alt="tic-tac-toe — status"/></picture><br/>
   <a href="https://arena.anonymous-ekansh.workers.dev/t/new">new game</a>
 </td></tr></table>
+<!-- ARENA:END -->
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s04.svg"/><img src="assets/s04.svg" alt="04 — telemetry"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/telemetry.svg"/><img src="assets/telemetry.svg" alt="Repository Telemetry and Activity"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/telemetry.svg"/><img src="assets/telemetry.svg" alt="Telemetry — what the hands are doing"/></picture>
 
 <div align="center">
-  <picture>
-    <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake-dark.svg" />
-    <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
-    <img alt="Contribution activity animation" src="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" />
-  </picture>
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://streak-stats.demolab.com?user=Anonymous-Ekansh&amp;theme=transparent&amp;hide_border=true&amp;ring=E6E6E6&amp;fire=E6E6E6&amp;currStreakLabel=E6E6E6&amp;currStreakNum=E6E6E6&amp;sideNums=E6E6E6&amp;sideLabels=8C8C8C&amp;dates=8C8C8C&amp;stroke=3A3A3A"/>
+  <img src="https://streak-stats.demolab.com?user=Anonymous-Ekansh&amp;theme=transparent&amp;hide_border=true&amp;ring=555555&amp;fire=555555&amp;currStreakLabel=555555&amp;currStreakNum=333333&amp;sideNums=333333&amp;sideLabels=777777&amp;dates=777777&amp;stroke=C4C4C4" alt="Contribution streak"/>
+</picture>
+
+</div>
+
+<div align="center">
+
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake-dark.svg"/>
+  <source media="(prefers-color-scheme: light)" srcset="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg"/>
+  <img src="https://raw.githubusercontent.com/Anonymous-Ekansh/Anonymous-Ekansh/output/github-contribution-grid-snake.svg" alt="Contribution grid snake animation"/>
+</picture>
+
 </div>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s05.svg"/><img src="assets/s05.svg" alt="05 — route"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/experience.svg"/><img src="assets/experience.svg" alt="The Route — Experience and Timeline"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/experience.svg"/><img src="assets/experience.svg" alt="Experience and timeline"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s06.svg"/><img src="assets/s06.svg" alt="06 — stack"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/stack.svg"/><img src="assets/stack.svg" alt="Technical Stack"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/stack.svg"/><img src="assets/stack.svg" alt="Current tech arsenal"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/s07.svg"/><img src="assets/s07.svg" alt="07 — focus"/></picture>
-<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/focus.svg"/><img src="assets/focus.svg" alt="Current Focus: Learning, Building, Exploring"/></picture>
+<picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/focus.svg"/><img src="assets/focus.svg" alt="Current focus — now.yml"/></picture>
 
 <picture><source media="(prefers-color-scheme: dark)" srcset="assets/dark/footer.svg"/><img src="assets/footer.svg" alt="Current status"/></picture>
