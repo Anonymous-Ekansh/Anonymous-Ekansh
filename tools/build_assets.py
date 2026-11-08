@@ -158,7 +158,7 @@ def build_header(data: dict, palette: dict) -> str:
     place = "INDIA"
     subtitle = "Full-stack engineer — products people actually need."
     status = "status ▸ open to SWE internships · early-stage startup roles · product engineering · fintech"
-    pillars = h.get("pillars", ["FULL-STACK SYSTEMS", "APPLIED AI & AGENTS", "QUANT & FINTECH"])
+    pillars = h.get("pillars", ["FULL-STACK SYSTEMS", "APPLIED AI & AGENTS", "FINTECH"])
     tag = h.get("tag", "B.TECH CS")
 
     pillars_str = "  ·  ".join(pillars)
