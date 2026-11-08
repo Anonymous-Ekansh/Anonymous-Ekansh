@@ -20,22 +20,26 @@
   },
   "whoami": {
     "lines": [
-      "first-year CS student at Shiv Nadar University building scalable software and market systems.",
-      "crafting systems at the intersection of full-stack engineering, performance, and quantitative finance.",
-      "focused on computational correctness, clean interface design, and high-throughput architectures."
+      "B.Tech CS undergrad, building full-stack products people actually use — since I was 14.",
+      "stack: Next.js · TypeScript · React Native · Node.js · PostgreSQL · Supabase.",
+      "I think in systems: SQL schema design, row-level security, cross-platform Expo routing, server-side caching layers."
     ],
     "rows": [
       [
         "FOCUS",
-        "Full-Stack Systems · Quant & Market Systems · Distributed Infrastructure · Performance"
+        "Full-Stack Systems · Health-Tech · Fintech · Algo Trading"
+      ],
+      [
+        "BUILDING",
+        "a stealth health-tech startup · PolyIntel prediction-market terminal"
       ],
       [
         "STATUS",
-        "open to SWE internships (2026/2027) · quant research roles · open-source collaboration"
+        "open to SWE internships · early-stage startup roles · product engineering"
       ],
       [
         "COMMUNITIES",
-        "Technical Lead @ TEDx Shiv Nadar University · ACM Chapter · Finvest Club · E-Cell"
+        "Breeze · SNIoE Business Conclave · TEDxSNU · ACM · Finvest"
       ]
     ]
   },

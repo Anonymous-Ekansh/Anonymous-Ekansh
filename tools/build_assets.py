@@ -182,32 +182,60 @@ def build_section_divider(num_str: str, name: str, palette: dict) -> str:
 
 
 def build_whoami(data: dict, palette: dict) -> str:
-    """Builds whoami panel."""
+    """
+    Builds whoami panel with height computed from content.
+    - L1 (bone, 16px): "B.Tech CS undergrad, building full-stack products people actually use — since I was 14."
+    - L2 (bone, 16px): "stack: Next.js · TypeScript · React Native · Node.js · PostgreSQL · Supabase."
+    - L3 (muted, 15px): "I think in systems: SQL schema design, row-level security, cross-platform Expo routing, server-side caching layers."
+    - Faint rule
+    - Labeled rows (label muted 11px letter-spacing 2.5 at x=48; value 15px at x=190):
+        FOCUS        Full-Stack Systems · Health-Tech · Fintech · Algo Trading
+        BUILDING     a stealth health-tech startup · PolyIntel prediction-market terminal
+        STATUS       open to SWE internships · early-stage startup roles · product engineering   (accent)
+        COMMUNITIES  Breeze · SNIoE Business Conclave · TEDxSNU · ACM · Finvest
+    Each line rises in with a stagger. No age, no CGPA, no graduation date.
+    """
     whoami = data.get("whoami", {})
-    lines = whoami.get("lines", [])
-    rows = whoami.get("rows", [])
+    lines = whoami.get("lines", [
+        "B.Tech CS undergrad, building full-stack products people actually use — since I was 14.",
+        "stack: Next.js · TypeScript · React Native · Node.js · PostgreSQL · Supabase.",
+        "I think in systems: SQL schema design, row-level security, cross-platform Expo routing, server-side caching layers."
+    ])
+    rows = whoami.get("rows", [
+        ["FOCUS", "Full-Stack Systems · Health-Tech · Fintech · Algo Trading"],
+        ["BUILDING", "a stealth health-tech startup · PolyIntel prediction-market terminal"],
+        ["STATUS", "open to SWE internships · early-stage startup roles · product engineering"],
+        ["COMMUNITIES", "Breeze · SNIoE Business Conclave · TEDxSNU · ACM · Finvest"]
+    ])
 
     body_parts = []
-    curr_y = 34
+    curr_y = 32
     step = 1
 
     # Lead summary lines
-    for line in lines:
+    for idx, line in enumerate(lines):
+        if idx < 2:
+            fill_col = palette["bone"]
+            f_size = 16
+        else:
+            fill_col = palette["muted"]
+            f_size = 15
+
         body_parts.append(
-            f'  <text class="mono rise {delay(step)}" x="48" y="{curr_y}" font-size="15" fill="{palette["bone"]}">{xml_escape(line)}</text>'
+            f'  <text class="mono rise {delay(step)}" x="48" y="{curr_y}" font-size="{f_size}" fill="{fill_col}">{xml_escape(line)}</text>'
         )
         curr_y += 28
         step += 1
 
-    # Horizontal divider rule
-    curr_y += 6
+    # Faint rule
+    curr_y += 2
     body_parts.append(
-        f'  <line class="rise {delay(step)}" x1="48" y1="{curr_y}" x2="952" y2="{curr_y}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.6"/>'
+        f'  <line class="rise {delay(step)}" x1="48" y1="{curr_y}" x2="952" y2="{curr_y}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>'
     )
-    curr_y += 32
+    curr_y += 34
     step += 1
 
-    # Labeled rows
+    # Labeled rows (x=48 for label, x=190 for value)
     for row in rows:
         label, text = row[0], row[1]
         text_fill = palette["accent"] if label.upper() == "STATUS" else palette["bone"]
@@ -215,13 +243,13 @@ def build_whoami(data: dict, palette: dict) -> str:
             f'  <text class="mono rise {delay(step)}" x="48" y="{curr_y}" font-size="11" fill="{palette["muted"]}" letter-spacing="2.5">{xml_escape(label)}</text>'
         )
         body_parts.append(
-            f'  <text class="mono rise {delay(step)}" x="160" y="{curr_y}" font-size="14.5" fill="{text_fill}">{xml_escape(text)}</text>'
+            f'  <text class="mono rise {delay(step)}" x="190" y="{curr_y}" font-size="15" fill="{text_fill}">{xml_escape(text)}</text>'
         )
-        curr_y += 32
+        curr_y += 34
         step += 1
 
-    total_height = curr_y + 10
-    return wrap(total_height, "whoami — background, focus, status, communities", "\n".join(body_parts), palette)
+    total_height = curr_y - 10
+    return wrap(total_height, "whoami — bio, focus, building, status, communities", "\n".join(body_parts), palette)
 
 
 def build_projects(data: dict, palette: dict) -> str:
