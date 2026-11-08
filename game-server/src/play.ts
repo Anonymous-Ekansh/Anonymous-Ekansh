@@ -8,10 +8,10 @@
  * validates every move, so the page degrades instead of breaking.
  */
 
-import { pieceSet } from "./pieces";
+import { PIECE_SHAPES } from "./pieces";
 
 export function playPage(profile: string): string {
-  const pieces = JSON.stringify(pieceSet()).replace(/</g, "\\u003c");
+  const pieces = JSON.stringify(PIECE_SHAPES).replace(/</g, "\\u003c");
   const esc = profile.replace(/"/g, "&quot;");
 
   return `<!doctype html>
@@ -58,7 +58,8 @@ h2{font-size:10.5px;font-weight:600;letter-spacing:.2em;margin:0;color:var(--acc
 .sq.cap::before{width:66%;height:66%;margin:-33% 0 0 -33%;background:transparent;border:3px solid var(--accent);opacity:.45}
 .sq:focus-visible{outline:3px dashed var(--accent);outline-offset:-3px;z-index:3}
 .pc{display:block;width:100%;height:100%;pointer-events:none}
-.pc g{pointer-events:none}
+.pc.w g{fill:none;stroke:var(--bone);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
+.pc.b g{fill:var(--bone);stroke:var(--bone);stroke-width:1.1;stroke-linejoin:round;stroke-linecap:round}
 .ttt{--tile:clamp(58px,17vw,84px);display:grid;grid-template-columns:repeat(3,var(--tile));gap:7px;width:max-content}
 .tcell{position:relative;width:var(--tile);height:var(--tile);padding:0;border:1.5px solid var(--rule);border-radius:9px;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none}
 .tcell.x::before{content:"";position:absolute;inset:26%;background:linear-gradient(45deg,transparent 43%,var(--mark) 43% 57%,transparent 57%),linear-gradient(-45deg,transparent 43%,var(--mark) 43% 57%,transparent 57%)}
@@ -163,19 +164,16 @@ function boardMap(fen){
   return out;
 }
 
-function themeName(){
-  return window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light";
-}
-
 function pieceNode(piece){
   const svg = document.createElementNS(SVGNS, "svg");
-  svg.setAttribute("viewBox", "0 0 45 45");
-  svg.setAttribute("class", "pc");
+  svg.setAttribute("viewBox", "0 0 44 44");
+  svg.setAttribute("class", "pc " + piece.color);
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
-  // The Cburnett set bakes its colours in, so the node is just markup for the current theme.
-  const key = piece.color + piece.type.toUpperCase();
-  svg.innerHTML = (PIECES[themeName()] || {})[key] || "";
+  const g = document.createElementNS(SVGNS, "g");
+  g.setAttribute("transform", "translate(6.2 5.6) scale(0.72)");
+  g.innerHTML = PIECES[piece.type] || "";
+  svg.appendChild(g);
   return svg;
 }
 
@@ -420,13 +418,6 @@ async function init(){
   await refresh();
   window.setInterval(function(){ if (!document.hidden) refresh(); }, 3000);
   document.addEventListener("visibilitychange", function(){ if (!document.hidden) refresh(); });
-  // The piece artwork carries its own colours, so a theme flip needs a redraw.
-  if (window.matchMedia) {
-    const mq = window.matchMedia("(prefers-color-scheme: dark)");
-    const redraw = function(){ renderChess(); };
-    if (mq.addEventListener) mq.addEventListener("change", redraw);
-    else if (mq.addListener) mq.addListener(redraw);
-  }
 }
 
 init();

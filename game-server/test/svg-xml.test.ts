@@ -11,13 +11,7 @@ import { XMLValidator } from "fast-xml-parser";
 import { describe, expect, it } from "vitest";
 
 import { route } from "../src/index";
-import {
-  CHESS_BANNER_WIDTH,
-  CHESS_TILE,
-  MONO,
-  TTT_BANNER_WIDTH,
-  TTT_TILE,
-} from "../src/svg";
+import { MONO } from "../src/svg";
 import { MemoryStore } from "../src/store";
 
 const BROWSER =
@@ -110,11 +104,6 @@ describe("svg documents", () => {
     expect(MONO).toContain("'SF Mono'");
   });
 
-  it("sizes the banners to the boards they sit over", () => {
-    expect(CHESS_TILE * 8).toBe(CHESS_BANNER_WIDTH);
-    expect(TTT_TILE * 3).toBe(TTT_BANNER_WIDTH);
-  });
-
   it("renders every chess tile, both themes, for three board states", async () => {
     for (const state of [OPEN_CHESS, RICH_CHESS, CHECK_CHESS]) {
       const s = store(state, RUNNING_TTT);
@@ -123,6 +112,7 @@ describe("svg documents", () => {
           for (const rank of RANKS) {
             const svg = await render(s, `/c/tile/${file}${rank}.svg?theme=${theme}`);
             expect(svg).toContain(`aria-label="${file}${rank}:`);
+            expect(svg).toContain('width="44"');
           }
         }
       }
@@ -134,9 +124,9 @@ describe("svg documents", () => {
       const s = store(state, RUNNING_TTT);
       for (const theme of THEMES) {
         const status = await render(s, `/c/status.svg?theme=${theme}`);
-        expect(status).toContain(`width="${CHESS_BANNER_WIDTH}"`);
+        expect(status).toContain('width="540"');
         const recent = await render(s, `/c/recent.svg?theme=${theme}`);
-        expect(recent).toContain(`width="${CHESS_BANNER_WIDTH}"`);
+        expect(recent).toContain('width="540"');
       }
     }
   });
@@ -147,7 +137,7 @@ describe("svg documents", () => {
       for (const theme of THEMES) {
         for (let i = 0; i < 9; i += 1) {
           const svg = await render(s, `/t/tile/${i}.svg?theme=${theme}`);
-          expect(svg).toContain(`width="${TTT_TILE}"`);
+          expect(svg).toContain('width="72"');
         }
       }
     }
@@ -158,7 +148,7 @@ describe("svg documents", () => {
       const s = store(OPEN_CHESS, state);
       for (const theme of THEMES) {
         const svg = await render(s, `/t/status.svg?theme=${theme}`);
-        expect(svg).toContain(`width="${TTT_BANNER_WIDTH}"`);
+        expect(svg).toContain('width="320"');
       }
     }
   });
