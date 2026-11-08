@@ -137,138 +137,156 @@
     }
   ],
   "telemetry": {
-    "caption": "TELEMETRY — WHAT THE REPOSITORIES ARE DOING",
+    "caption": "TELEMETRY — WHAT THE HANDS ARE DOING",
     "languages": [
       [
-        "javascript",
-        42
-      ],
-      [
         "typescript",
-        32
+        43
       ],
       [
-        "html",
+        "python",
         16
       ],
       [
         "css",
-        5
+        14
       ],
       [
-        "python",
-        5
+        "html",
+        13
+      ],
+      [
+        "javascript",
+        12
+      ],
+      [
+        "sql",
+        2
       ]
     ],
-    "series_label": "SHIPPING VELOCITY · 2024 → 2026",
-    "series": [
-      {
-        "x": 440,
-        "y": 232,
-        "label": "'24"
-      },
-      {
-        "x": 488,
-        "y": 210,
-        "label": ""
-      },
-      {
-        "x": 536,
-        "y": 188,
-        "label": "'25"
-      },
-      {
-        "x": 584,
-        "y": 148,
-        "label": ""
-      },
-      {
-        "x": 622,
-        "y": 112,
-        "label": "'26"
-      },
-      {
-        "x": 656,
-        "y": 92,
-        "label": ""
-      }
-    ],
+    "series": [],
+    "live_deployments": 5,
     "counters": [
       [
-        "500+",
-        "CAMPUS USERS ENGAGED"
+        "19",
+        "REPOSITORIES"
       ],
       [
-        "3+",
-        "PRODUCTION PLATFORMS SHIPPED"
+        "10",
+        "PROJECTS DOCUMENTED"
       ],
       [
-        "18+",
-        "ACADEMIC DEPARTMENTS ACTIVE"
+        "5",
+        "LIVE DEPLOYMENTS"
       ],
       [
         "∞",
-        "TERMINAL SESSIONS CONCURRENT"
+        "TABS OPEN RIGHT NOW"
       ]
     ]
   },
   "experience": [
     {
-      "when": "2026 – PRES",
-      "title": "TEDx Shiv Nadar University · Technical Lead · Delhi NCR",
-      "text": "Directing digital platforms, technical infrastructure, and attendee software systems for campus flagship conferences."
+      "when": "JUL 2026 — NOW",
+      "title": "Technical Lead — Breeze, Shiv Nadar University",
+      "text": "Technical Lead."
     },
     {
-      "when": "2025 – 2026",
-      "title": "ACM & Finvest Student Chapters · Core Contributor & Member",
-      "text": "Collaborating on algorithmic problem sets, systems architecture discussions, and quantitative trading simulations."
+      "when": "JUN 2026 — NOW",
+      "title": "WebDev Lead — SNIoE Business Conclave",
+      "text": "Leads the web build: speakers, sponsors, payments, 3D sponsor globe."
     },
     {
-      "when": "2025 – PRES",
-      "title": "Shiv Nadar University · B.Tech Computer Science & Engineering",
-      "text": "Specializing in core computer science, systems design, operating systems, and quantitative modeling foundations."
+      "when": "MAY 2026 — NOW",
+      "title": "Technical Lead — TEDxShivNadarUniversity",
+      "text": "Registrations, tiered pricing and the payment-verification desk."
+    },
+    {
+      "when": "JUN 2025 — NOW",
+      "title": "Founder — Stealth Startup",
+      "text": "Health-tech, in stealth."
+    },
+    {
+      "when": "SEP 2025 — NOW",
+      "title": "Tech Team — ACM, SNIoE Chapter",
+      "text": "Tech team member."
+    },
+    {
+      "when": "SEP 2025 — NOW",
+      "title": "Content Team — Finvest, SNU's Finance Club",
+      "text": "Content team member."
+    },
+    {
+      "when": "JUN 2022 — MAY 2025",
+      "title": "Crypto Trader — Self-employed",
+      "text": "BTC, SOL and ETH: real-time market analysis and technical indicators."
+    },
+    {
+      "when": "JUN 2019 — APR 2020",
+      "title": "Web Developer — Freelance",
+      "text": "Built an autoblogging news site aggregating RSS feeds."
     }
   ],
   "stack": [
     [
       "LANGUAGES",
-      "C++ · TypeScript · JavaScript · Python · SQL · HTML/CSS"
+      "TypeScript · JavaScript · Python · C++ · SQL · HTML · CSS"
     ],
     [
-      "FULL STACK",
-      "Next.js · React · Node.js · Express.js · React Native · Expo"
+      "WEB",
+      "Next.js · React · Tailwind CSS · Framer Motion · Three.js · TanStack Query"
     ],
     [
-      "DATA / CLOUD",
-      "PostgreSQL · Supabase · Redis · REST APIs · TanStack Query"
+      "MOBILE",
+      "React Native · Expo (cross-platform routing) · Zustand"
     ],
     [
-      "SYSTEMS",
-      "Linux · Git & GitHub · Docker · Shell / Zsh · Performance Profiling"
+      "BACKEND",
+      "Node.js · Express · FastAPI · tRPC · REST · server-side caching layers"
     ],
     [
-      "TOOLING",
-      "Neovim · Postman · Vercel · Netlify · TailwindCSS · Figma"
+      "DATA",
+      "PostgreSQL · Supabase · SQL schema design · Row Level Security · pgvector · Realtime"
+    ],
+    [
+      "AI / ML",
+      "Agentic pipelines · ONNX · embeddings · Sarvam AI · Groq · NLP"
+    ],
+    [
+      "QUANT",
+      "Algo trading · market microstructure · Polymarket data · crypto markets"
+    ],
+    [
+      "INFRA",
+      "Vercel · Render · Netlify · AWS S3 · GitHub Actions · Linux · Git"
+    ],
+    [
+      "TESTING",
+      "Pytest · pgTAP · Playwright"
     ]
   ],
   "focus": {
+    "title": "NOW.YML",
+    "prompt": "ekansh@focus:~$ cat now.yml",
     "learning": [
       "Quantitative trading fundamentals & market microstructure",
-      "Advanced PostgreSQL query planning, indexing, and internal mechanics",
-      "Distributed consensus models and low-latency network architectures"
+      "Advanced PostgreSQL — query optimisation, indexing",
+      "Distributed systems & the CAP theorem"
     ],
     "building": [
-      "Real-time market analytics dashboard with live streaming feeds",
-      "Algorithmic peer-matching graphs and routing protocols for Kinexis"
+      "Finance dashboard with React and live market feeds",
+      "Deeper matching algorithms for Kinexis",
+      "A stealth health-tech product"
     ],
     "exploring": [
-      "Prediction market pricing mechanisms and probability calibration",
-      "High-performance low-latency execution engines in modern C++"
+      "Prediction-market modelling & probability calibration",
+      "Low-latency systems in C++",
+      "Algo trading systems"
     ]
   },
   "footer": {
-    "status": "STATUS — SHIPPING",
-    "line": "compiling ideas into high-throughput systems, usually after midnight",
-    "right": "iamekansh.netlify.app  ·  Delhi NCR, IN  ·  © 2026"
+    "status": "STATUS — BUILDING",
+    "line": "shipping first, polishing second, sleeping eventually",
+    "right": "iamekansh.netlify.app · India · © 2026"
   }
 }

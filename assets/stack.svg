@@ -1,4 +1,4 @@
-<svg viewBox="0 0 1000 228" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Technical Stack — Languages, Full Stack, Data, Systems, Tooling">
+<svg viewBox="0 0 1000 320" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Tech arsenal — LANGUAGES, WEB, MOBILE, BACKEND, DATA, AI / ML, QUANT, INFRA, TESTING">
   <style>
     .mono { font-family: ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace; }
     .draw { stroke-dasharray: 1000; stroke-dashoffset: 1000; animation: draw 1.4s cubic-bezier(.6,0,.2,1) forwards; }
@@ -52,15 +52,23 @@
       .ring { opacity: 0 !important; }
     }
   </style>
-  <line x1="154" y1="10" x2="154" y2="200" stroke="#C4C4C4" stroke-width="1" opacity="0.4"/>
-  <text class="mono rise d1" x="48" y="34" font-size="11.5" fill="#777777" letter-spacing="2">LANGUAGES</text>
-  <text class="mono rise d1" x="170" y="34" font-size="14.5" fill="#333333">C++ · TypeScript · JavaScript · Python · SQL · HTML/CSS</text>
-  <text class="mono rise d2" x="48" y="70" font-size="11.5" fill="#777777" letter-spacing="2">FULL STACK</text>
-  <text class="mono rise d2" x="170" y="70" font-size="14.5" fill="#333333">Next.js · React · Node.js · Express.js · React Native · Expo</text>
-  <text class="mono rise d3" x="48" y="106" font-size="11.5" fill="#777777" letter-spacing="2">DATA / CLOUD</text>
-  <text class="mono rise d3" x="170" y="106" font-size="14.5" fill="#333333">PostgreSQL · Supabase · Redis · REST APIs · TanStack Query</text>
-  <text class="mono rise d4" x="48" y="142" font-size="11.5" fill="#777777" letter-spacing="2">SYSTEMS</text>
-  <text class="mono rise d4" x="170" y="142" font-size="14.5" fill="#333333">Linux · Git &amp; GitHub · Docker · Shell / Zsh · Performance Profiling</text>
-  <text class="mono rise d5" x="48" y="178" font-size="11.5" fill="#777777" letter-spacing="2">TOOLING</text>
-  <text class="mono rise d5" x="170" y="178" font-size="14.5" fill="#333333">Neovim · Postman · Vercel · Netlify · TailwindCSS · Figma</text>
+  <line x1="138" y1="8" x2="138" y2="300" stroke="#C4C4C4" stroke-width="1" opacity="0.4"/>
+  <text class="mono rise d1" x="48" y="34" font-size="12" fill="#777777" letter-spacing="2">LANGUAGES</text>
+  <text class="mono rise d1" x="154" y="34" font-size="15" fill="#333333">TypeScript · JavaScript · Python · C++ · SQL · HTML · CSS</text>
+  <text class="mono rise d2" x="48" y="66" font-size="12" fill="#777777" letter-spacing="2">WEB</text>
+  <text class="mono rise d2" x="154" y="66" font-size="15" fill="#333333">Next.js · React · Tailwind CSS · Framer Motion · Three.js · TanStack Query</text>
+  <text class="mono rise d3" x="48" y="98" font-size="12" fill="#777777" letter-spacing="2">MOBILE</text>
+  <text class="mono rise d3" x="154" y="98" font-size="15" fill="#333333">React Native · Expo (cross-platform routing) · Zustand</text>
+  <text class="mono rise d4" x="48" y="130" font-size="12" fill="#777777" letter-spacing="2">BACKEND</text>
+  <text class="mono rise d4" x="154" y="130" font-size="15" fill="#333333">Node.js · Express · FastAPI · tRPC · REST · server-side caching layers</text>
+  <text class="mono rise d5" x="48" y="162" font-size="12" fill="#777777" letter-spacing="2">DATA</text>
+  <text class="mono rise d5" x="154" y="162" font-size="15" fill="#333333">PostgreSQL · Supabase · SQL schema design · Row Level Security · pgvector · Realtime</text>
+  <text class="mono rise d6" x="48" y="194" font-size="12" fill="#777777" letter-spacing="2">AI / ML</text>
+  <text class="mono rise d6" x="154" y="194" font-size="15" fill="#333333">Agentic pipelines · ONNX · embeddings · Sarvam AI · Groq · NLP</text>
+  <text class="mono rise d7" x="48" y="226" font-size="12" fill="#777777" letter-spacing="2">QUANT</text>
+  <text class="mono rise d7" x="154" y="226" font-size="15" fill="#333333">Algo trading · market microstructure · Polymarket data · crypto markets</text>
+  <text class="mono rise d8" x="48" y="258" font-size="12" fill="#777777" letter-spacing="2">INFRA</text>
+  <text class="mono rise d8" x="154" y="258" font-size="15" fill="#333333">Vercel · Render · Netlify · AWS S3 · GitHub Actions · Linux · Git</text>
+  <text class="mono rise d9" x="48" y="290" font-size="12" fill="#777777" letter-spacing="2">TESTING</text>
+  <text class="mono rise d9" x="154" y="290" font-size="15" fill="#333333">Pytest · pgTAP · Playwright</text>
 </svg>

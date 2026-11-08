@@ -7,6 +7,10 @@ Reads profile.json (single source of truth) and writes every SVG twice:
   - assets/X.svg (light palette)
   - assets/dark/X.svg (dark palette)
 
+Live telemetry (languages by source bytes, 12-month contribution series and the
+counters) is read from assets/telemetry.json when tools/telemetry.py has written
+it; profile.json holds the starter values and the fallback.
+
 Strictly idempotent. No external dependencies.
 """
 
@@ -15,6 +19,9 @@ import os
 import sys
 from html import escape as html_escape
 from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+TELEMETRY_JSON = BASE_DIR / "assets" / "telemetry.json"
 
 # --- PALETTES (baked in, no CSS variables) ---
 PALETTE_LIGHT = {
@@ -39,6 +46,24 @@ PALETTE_DARK = {
 
 FONT_STACK = 'ui-monospace, "SFMono-Regular", "SF Mono", Menlo, Consolas, monospace'
 
+# Starter values measured from the cloned repos; tools/telemetry.py replaces them with
+# live source-byte percentages in assets/telemetry.json.
+DEFAULT_LANGUAGES = [
+    ["typescript", 43],
+    ["python", 16],
+    ["css", 14],
+    ["html", 13],
+    ["javascript", 12],
+    ["sql", 2],
+]
+
+DEFAULT_COUNTERS = [
+    ["19", "REPOSITORIES"],
+    ["10", "PROJECTS DOCUMENTED"],
+    ["5", "LIVE DEPLOYMENTS"],
+    ["∞", "TABS OPEN RIGHT NOW"],
+]
+
 
 def xml_escape(text: str) -> str:
     """Escapes text for safe embedding in XML/SVG."""
@@ -48,6 +73,22 @@ def xml_escape(text: str) -> str:
         html_escape(text, quote=True)
         .replace("'", "&#39;")
     )
+
+
+def wrap_text(text: str, limit: int) -> list:
+    """Hard-wraps on spaces so a long line can never be clipped by the 1000px canvas."""
+    words = str(text).split(" ")
+    out, current = [], ""
+    for word in words:
+        candidate = f"{current} {word}".strip()
+        if current and len(candidate) > limit:
+            out.append(current)
+            current = word
+        else:
+            current = candidate
+    if current:
+        out.append(current)
+    return out or [""]
 
 
 def delay(i: int) -> str:
@@ -212,8 +253,13 @@ def build_whoami(data: dict, palette: dict) -> str:
     curr_y = 32
     step = 1
 
-    # Lead summary lines
+    # Lead summary lines, wrapped so nothing runs past x=952
+    flat = []
     for idx, line in enumerate(lines):
+        for piece in wrap_text(line, 92):
+            flat.append((idx, piece))
+
+    for idx, line in flat:
         if idx < 2:
             fill_col = palette["bone"]
             f_size = 16
@@ -279,7 +325,10 @@ def build_projects(data: dict, palette: dict) -> str:
                     file=sys.stderr,
                 )
 
-        body_parts.append(f'    <g class="rise {delay(step)}" transform="translate(0, {curr_y})">')
+        # Translate on the outer group: the rise animation owns `transform` on the inner one,
+        # so putting both on the same element would collapse every block onto y=0.
+        body_parts.append(f'    <g transform="translate(0, {curr_y})">')
+        body_parts.append(f'      <g class="rise {delay(step)}">')
         # Title "NN / NAME"
         body_parts.append(f'      <text x="48" y="24" font-size="17" font-weight="700" fill="{palette["bone"]}" letter-spacing="0.8">{xml_escape(name)}</text>')
 
@@ -294,6 +343,7 @@ def build_projects(data: dict, palette: dict) -> str:
 
         # Rule at y=104
         body_parts.append(f'      <line x1="48" y1="104" x2="952" y2="104" stroke="{palette["rule"]}" stroke-width="1"/>')
+        body_parts.append('      </g>')
         body_parts.append('    </g>')
 
         curr_y += 110
@@ -304,174 +354,285 @@ def build_projects(data: dict, palette: dict) -> str:
     return wrap(total_height, f"Ten projects by {data.get('name', 'Ekansh Jain')}", "\n".join(body_parts), palette)
 
 
+# --- shared helpers for the data-driven panels --------------------------------------
+
+
+def text_el(x, y, size, fill, value, ls=None, weight=None, anchor=None, cls=None, style=None, opacity=None):
+    """One monospace text line with only the attributes it needs."""
+    attrs = [f'x="{x}"', f'y="{y}"', f'font-size="{size}"', f'fill="{fill}"']
+    if ls is not None:
+        attrs.append(f'letter-spacing="{ls}"')
+    if weight is not None:
+        attrs.append(f'font-weight="{weight}"')
+    if anchor:
+        attrs.append(f'text-anchor="{anchor}"')
+    if style:
+        attrs.append(f'style="{style}"')
+    if opacity is not None:
+        attrs.append(f'opacity="{opacity}"')
+    klass = "mono" if not cls else f"mono {cls}"
+    return f'  <text class="{klass}" ' + " ".join(attrs) + f'>{xml_escape(value)}</text>'
+
+
+def date_letterspacing(value: str, width: float = 140.0) -> float:
+    """Keeps long date ranges inside the timeline's date column (x=48..196)."""
+    chars = max(1, len(value))
+    per_char = 6.6  # 11px monospace advance
+    room = width - chars * per_char
+    if chars <= 1:
+        return 2.0
+    return max(0.4, min(2.0, room / (chars - 1)))
+
+
+def load_telemetry(data: dict) -> dict:
+    """assets/telemetry.json wins; profile.json holds the starter values and fallback."""
+    configured = data.get("telemetry", {}) or {}
+    out = {
+        "caption": configured.get("caption", "TELEMETRY — WHAT THE HANDS ARE DOING"),
+        "languages": configured.get("languages") or DEFAULT_LANGUAGES,
+        "series": configured.get("series") or [],
+        "counters": configured.get("counters") or DEFAULT_COUNTERS,
+    }
+    if not TELEMETRY_JSON.exists():
+        return out
+    try:
+        live = json.loads(TELEMETRY_JSON.read_text(encoding="utf-8"))
+    except (OSError, ValueError) as exc:
+        print(f"[WARNING] assets/telemetry.json unreadable ({exc}); using profile.json", file=sys.stderr)
+        return out
+    if not isinstance(live, dict):
+        return out
+    if isinstance(live.get("languages"), list) and live["languages"]:
+        out["languages"] = live["languages"]
+    if isinstance(live.get("series"), list) and live["series"]:
+        out["series"] = live["series"]
+    if isinstance(live.get("counters"), list) and len(live["counters"]) >= 4:
+        out["counters"] = live["counters"]
+    return out
+
+
+def series_values(series: list) -> list:
+    """Accepts plain monthly numbers or the older {x,y} point objects."""
+    values = []
+    for item in series:
+        raw = item.get("y") if isinstance(item, dict) else item
+        try:
+            values.append(float(raw))
+        except (TypeError, ValueError):
+            values.append(0.0)
+    return values[-12:]
+
+
 def build_telemetry(data: dict, palette: dict) -> str:
-    """Builds telemetry panel with animated language bars, shipping velocity, and counters."""
-    telem = data.get("telemetry", {})
-    caption = telem.get("caption", "TELEMETRY — WHAT THE REPOSITORIES ARE DOING")
-    languages = telem.get("languages", [])
-    series_label = telem.get("series_label", "SHIPPING VELOCITY · 2024 → 2026")
-    series = telem.get("series", [])
-    counters = telem.get("counters", [])
+    """1000x330: languages (left), 12-month contributions (middle), counters (right)."""
+    live = load_telemetry(data)
+    caption = live["caption"]
 
-    body_parts = []
+    langs = []
+    for row in live["languages"][:6]:
+        try:
+            langs.append((str(row[0]), float(row[1])))
+        except (TypeError, ValueError, IndexError):
+            continue
+    counters = live["counters"][:4]
+    values = series_values(live["series"])
 
-    # Header line
-    body_parts.append(f'  <line x1="48" y1="40" x2="952" y2="40" stroke="{palette["rule"]}"/>')
-    body_parts.append(f'  <text fill="{palette["muted"]}" class="mono" x="48" y="28" font-size="11" letter-spacing="3.5">{xml_escape(caption)}</text>')
-    body_parts.append(f'  <text fill="{palette["muted"]}" class="mono" x="952" y="28" font-size="11" letter-spacing="3.5" text-anchor="end">FIG. 02</text>')
+    body = [
+        f'  <line x1="48" y1="40" x2="952" y2="40" stroke="{palette["rule"]}"/>',
+        text_el(48, 28, 11, palette["muted"], caption, ls=3.5),
+        text_el(952, 28, 11, palette["muted"], "FIG. 02", ls=3.5, anchor="end"),
+        f'  <line x1="360" y1="64" x2="360" y2="304" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>',
+        f'  <line x1="688" y1="64" x2="688" y2="304" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>',
+    ]
 
-    # Vertical separators
-    body_parts.append(f'  <line x1="360" y1="64" x2="360" y2="304" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>')
-    body_parts.append(f'  <line x1="688" y1="64" x2="688" y2="304" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>')
+    # LEFT — language distribution by source bytes
+    body.append(text_el(48, 78, 10, palette["dim"], "LANGUAGE DISTRIBUTION · BY SOURCE BYTES", ls=1.2))
+    top_pct = max([pct for _, pct in langs], default=0.0) or 1.0
+    for idx, (name, pct) in enumerate(langs):
+        y = 112 + idx * 32
+        width = max(3, int(round((pct / top_pct) * 200)))
+        fill = palette["accent"] if idx == 0 else palette["bone"]
+        body.append(text_el(48, y, 11, palette["bone"], name))
+        body.append(
+            f'  <rect class="bar {delay(idx + 1)}" style="transform-origin: 48px 0;" '
+            f'x="48" y="{y + 8}" width="{width}" height="6" fill="{fill}"/>'
+        )
+        body.append(text_el(340, y + 14, 10, palette["muted"], f"{int(round(pct))}%", anchor="end"))
 
-    # Column 1: Language distribution
-    body_parts.append(f'  <text fill="{palette["dim"]}" class="mono" x="48" y="78" font-size="10" letter-spacing="2.5">LANGUAGE DISTRIBUTION · EST.</text>')
-    body_parts.append('  <g class="mono" font-size="11">')
-    lang_y = 108
-    for idx, lang_item in enumerate(languages[:6]):
-        lname = lang_item[0]
-        lpct = lang_item[1]
-        bar_w = int((lpct / 100.0) * 600)  # max width ~220
-        fill_color = palette["accent"] if idx == 0 else palette["bone"]
-        step = idx + 1
-        body_parts.append(f'    <text fill="{palette["bone"]}" x="48" y="{lang_y}">{xml_escape(lname)}</text>')
-        body_parts.append(f'    <rect class="bar {delay(step)}" style="transform-origin: 48px 0;" x="48" y="{lang_y + 8}" width="{bar_w}" height="6" fill="{fill_color}"/>')
-        body_parts.append(f'    <text fill="{palette["muted"]}" x="{48 + bar_w + 10}" y="{lang_y + 15}" font-size="10">{lpct}%</text>')
-        lang_y += 36
-    body_parts.append('  </g>')
+    # MIDDLE — contributions, last 12 months
+    body.append(text_el(392, 78, 10, palette["dim"], "CONTRIBUTIONS · LAST 12 MONTHS", ls=2.4))
+    x0, x1 = 392.0, 656.0
+    top_y, base_y = 112.0, 248.0
+    body.append(f'  <line x1="392" y1="252" x2="656" y2="252" stroke="{palette["rule"]}"/>')
 
-    # Column 2: Shipping velocity sparkline
-    body_parts.append(f'  <text fill="{palette["dim"]}" class="mono" x="392" y="78" font-size="10" letter-spacing="2.5">{xml_escape(series_label)}</text>')
-    body_parts.append(f'  <line x1="392" y1="252" x2="656" y2="252" stroke="{palette["rule"]}"/>')
+    if values:
+        peak = max(values) or 1.0
+        span = max(1, len(values) - 1)
+        points = []
+        for i, value in enumerate(values):
+            px = x0 + (x1 - x0) * (i / span)
+            py = base_y - (value / peak) * (base_y - top_y)
+            points.append((px, py))
+        polyline = " ".join(f"{px:.1f},{py:.1f}" for px, py in points)
+        body.append(
+            f'  <polyline class="spark" points="{polyline}" stroke="{palette["accent"]}" stroke-width="1.8" fill="none"/>'
+        )
+        last_x, last_y = points[-1]
+        body.append(
+            f'  <circle class="ring" style="transform-origin: {last_x:.1f}px {last_y:.1f}px;" '
+            f'cx="{last_x:.1f}" cy="{last_y:.1f}" r="4" stroke="{palette["accent"]}" fill="none"/>'
+        )
+        body.append(f'  <circle cx="{last_x:.1f}" cy="{last_y:.1f}" r="2.8" fill="{palette["accent"]}"/>')
+        total = int(round(sum(values)))
+        peak_int = int(round(peak))
+        body.append(text_el(392, 288, 10.5, palette["muted"], f"peak {peak_int} / month · total {total}", ls=0.5))
+        body.append(text_el(656, 288, 10, palette["dim"], f"{len(values)} mo", anchor="end", ls=1.5))
+    else:
+        body.append(
+            f'  <line x1="392" y1="200" x2="656" y2="200" stroke="{palette["muted"]}" '
+            f'stroke-width="1" stroke-dasharray="1 7" stroke-linecap="round" opacity="0.7"/>'
+        )
+        body.append(text_el(392, 184, 10.5, palette["muted"], "awaiting first live run", ls=0.6))
+        body.append(text_el(392, 288, 10.5, palette["dim"], "series empty · run telemetry", ls=0.5))
 
-    # Points string
-    points_str = " ".join([f"{pt['x']},{pt['y']}" for pt in series])
-    if points_str:
-        body_parts.append(f'  <polyline class="spark" points="{points_str}" stroke="{palette["accent"]}" stroke-width="1.8" fill="none"/>')
+    # RIGHT — counters
+    cnt_y = 120
+    for idx, counter in enumerate(counters):
+        num, label = str(counter[0]), str(counter[1])
+        fill = palette["accent"] if num == "∞" else palette["bone"]
+        body.append(text_el(720, cnt_y, 44, fill, num, weight=700))
+        # The label sits beside the numeral: a 44px line box leaves no room above or below
+        # without eating into the neighbouring counter.
+        body.append(text_el(800, cnt_y - 6, 10, palette["muted"], label, ls=1.6))
+        cnt_y += 58
 
-    # Sparkline circles & labels
-    latest_pt = series[-2] if len(series) >= 2 else series[-1]
-    for idx, pt in enumerate(series):
-        is_highlight = (pt == latest_pt)
-        circle_fill = palette["accent"] if is_highlight else palette["bone"]
-        body_parts.append(f'  <circle class="fade {delay(idx + 6)}" cx="{pt["x"]}" cy="{pt["y"]}" r="2.8" fill="{circle_fill}"/>')
-        if pt.get("label"):
-            body_parts.append(f'  <text fill="{palette["dim"]}" class="mono" x="{pt["x"] - 6}" y="272" font-size="9.5" letter-spacing="1.5">{xml_escape(pt["label"])}</text>')
-
-    # Pulsing dot & ping on current marker
-    if latest_pt:
-        body_parts.append(f'  <circle class="ring" style="transform-origin: {latest_pt["x"]}px {latest_pt["y"]}px;" cx="{latest_pt["x"]}" cy="{latest_pt["y"]}" r="4" stroke="{palette["accent"]}" fill="none"/>')
-
-    body_parts.append(f'  <text fill="{palette["muted"]}" class="mono fade {delay(14)}" x="392" y="300" font-size="10" letter-spacing="1.5">trend — <tspan fill="{palette["accent"]}">accelerating</tspan></text>')
-
-    # Column 3: Counters
-    body_parts.append('  <g>')
-    cnt_y = 118
-    for idx, c in enumerate(counters[:4]):
-        num, clabel = c[0], c[1]
-        cfill = palette["accent"] if num == "∞" else palette["bone"]
-        body_parts.append(f'    <g class="rise {delay(idx + 4)}">')
-        body_parts.append(f'      <text fill="{cfill}" class="mono" x="720" y="{cnt_y}" font-size="44" font-weight="700">{xml_escape(num)}</text>')
-        body_parts.append(f'      <text fill="{palette["muted"]}" class="mono" x="792" y="{cnt_y - 6}" font-size="10" letter-spacing="2">{xml_escape(clabel)}</text>')
-        body_parts.append('    </g>')
-        cnt_y += 60
-    body_parts.append('  </g>')
-
-    return wrap(336, caption, "\n".join(body_parts), palette)
+    aria = "Telemetry — languages by source bytes, contributions over the last 12 months, counters"
+    return wrap(330, aria, "\n".join(body), palette)
 
 
 def build_experience(data: dict, palette: dict) -> str:
-    """Builds experience timeline panel."""
-    exp = data.get("experience", [])
-    body_parts = [
-        f'  <line x1="140" y1="12" x2="140" y2="{len(exp) * 88 + 30}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>'
+    """Timeline: date column, rule with one dot per entry, title and a single description line."""
+    entries = data.get("experience", [])
+    pitch = 74
+    top = 42
+    last_y = top + pitch * max(0, len(entries) - 1)
+    height = last_y + 46
+
+    body = [
+        f'  <line x1="196" y1="24" x2="196" y2="{last_y + 14}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.35"/>'
     ]
 
-    curr_y = 42
-    step = 1
-    for item in exp:
-        when = item.get("when", "")
-        title = item.get("title", "")
-        text = item.get("text", "")
+    for idx, entry in enumerate(entries):
+        y = top + idx * pitch
+        when = str(entry.get("when", ""))
+        title = str(entry.get("title", ""))
+        text = str(entry.get("text", ""))
 
-        body_parts.append(f'  <g class="rise {delay(step)}">')
-        body_parts.append(f'    <text class="mono" x="48" y="{curr_y}" font-size="11.5" font-weight="600" fill="{palette["accent"]}" letter-spacing="1.5">{xml_escape(when)}</text>')
-        body_parts.append(f'    <text class="mono" x="156" y="{curr_y}" font-size="15" font-weight="600" fill="{palette["bone"]}">{xml_escape(title)}</text>')
-        body_parts.append(f'    <text class="mono" x="156" y="{curr_y + 24}" font-size="13.5" fill="{palette["muted"]}">{xml_escape(text)}</text>')
-        body_parts.append('  </g>')
+        dot_fill = palette["accent"] if idx == 0 else palette["dim"]
+        dot_r = 3.6 if idx == 0 else 2.6
+        body.append(f'  <circle cx="196" cy="{y - 4}" r="{dot_r}" fill="{dot_fill}"/>')
+        body.append(text_el(48, y, 11, palette["muted"], when, ls=date_letterspacing(when)))
+        body.append(text_el(222, y, 15, palette["bone"], title, weight=600))
+        if text:
+            body.append(text_el(222, y + 20, 12, palette["muted"], text))
 
-        curr_y += 86
-        step += 1
-
-    total_height = curr_y + 16
-    return wrap(total_height, "Experience — Technical Leadership, Academics, Chapters", "\n".join(body_parts), palette)
+    aria = "Experience — " + ", ".join(str(e.get("title", "")) for e in entries[:3])
+    return wrap(height, aria, "\n".join(body), palette)
 
 
 def build_stack(data: dict, palette: dict) -> str:
-    """Builds technical stack panel."""
-    stack = data.get("stack", [])
-    body_parts = [
-        f'  <line x1="154" y1="10" x2="154" y2="{len(stack) * 36 + 20}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>'
+    """Label column, thin rule, value column. Text only, 32px pitch, staggered rise."""
+    rows = data.get("stack", [])
+    top = 34
+    pitch = 32
+    last_y = top + pitch * max(0, len(rows) - 1)
+    height = last_y + 30
+
+    body = [
+        f'  <line x1="138" y1="8" x2="138" y2="{last_y + 10}" stroke="{palette["rule"]}" stroke-width="1" opacity="0.4"/>'
     ]
+    for idx, row in enumerate(rows):
+        label = str(row[0])
+        value = str(row[1])
+        y = top + idx * pitch
+        body.append(text_el(48, y, 12, palette["muted"], label, ls=2, cls=f"rise {delay(idx + 1)}"))
+        body.append(text_el(154, y, 15, palette["bone"], value, cls=f"rise {delay(idx + 1)}"))
 
-    curr_y = 34
-    step = 1
-    for item in stack:
-        label = item[0]
-        text = item[1]
-        body_parts.append(f'  <text class="mono rise {delay(step)}" x="48" y="{curr_y}" font-size="11.5" fill="{palette["muted"]}" letter-spacing="2">{xml_escape(label)}</text>')
-        body_parts.append(f'  <text class="mono rise {delay(step)}" x="170" y="{curr_y}" font-size="14.5" fill="{palette["bone"]}">{xml_escape(text)}</text>')
-        curr_y += 36
-        step += 1
-
-    total_height = curr_y + 14
-    return wrap(total_height, "Technical Stack — Languages, Full Stack, Data, Systems, Tooling", "\n".join(body_parts), palette)
+    aria = "Tech arsenal — " + ", ".join(str(r[0]) for r in rows)
+    return wrap(height, aria, "\n".join(body), palette)
 
 
 def build_focus(data: dict, palette: dict) -> str:
-    """Builds current focus panel with terminal-style YAML look."""
-    focus = data.get("focus", {})
-    learning = focus.get("learning", [])
-    building = focus.get("building", [])
-    exploring = focus.get("exploring", [])
-
-    body_parts = []
-    curr_y = 36
-    step = 1
-
-    # Terminal prompt header
-    body_parts.append(f'  <g class="fade {delay(step)}">')
-    body_parts.append(f'    <text class="mono" x="48" y="{curr_y}" font-size="13" fill="{palette["dim"]}">anonymous@ekansh:~$ <tspan fill="{palette["bone"]}">cat focus.yaml</tspan></text>')
-    body_parts.append('  </g>')
-    curr_y += 30
-    step += 1
-
-    categories = [
-        ("learning", learning),
-        ("building", building),
-        ("exploring", exploring),
+    """Current focus as a thin-bordered terminal window with NOW.YML in the title bar."""
+    focus = data.get("focus", {}) or {}
+    title = str(focus.get("title", "NOW.YML"))
+    prompt = str(focus.get("prompt", "ekansh@focus:~$ cat now.yml"))
+    groups = [
+        ("LEARNING", focus.get("learning", [])),
+        ("BUILDING", focus.get("building", [])),
+        ("EXPLORING", focus.get("exploring", [])),
     ]
 
-    for cat_name, cat_items in categories:
-        body_parts.append(f'  <text class="mono rise {delay(step)}" x="48" y="{curr_y}" font-size="13" font-weight="600" fill="{palette["accent"]}">{xml_escape(cat_name)}:</text>')
-        curr_y += 24
-        step += 1
-        for it in cat_items:
-            body_parts.append(f'  <text class="mono rise {delay(step)}" x="72" y="{curr_y}" font-size="13" fill="{palette["muted"]}">- {xml_escape(it)}</text>')
-            curr_y += 24
-            step += 1
-        curr_y += 6
+    body = []
+    step = 0
 
-    total_height = curr_y + 10
-    return wrap(total_height, "Current Focus — learning, building, exploring", "\n".join(body_parts), palette)
+    def anim(y):
+        nonlocal step
+        style = f"animation-delay: {round(step * 0.09, 2)}s"
+        step += 1
+        return style
+
+    # window: measured backwards from the content height below
+    prompt_y = 66
+    y = prompt_y + 30
+    layout = []
+    for key, items in groups:
+        layout.append((y, key, None))
+        y += 24
+        for item in items:
+            layout.append((y, key, str(item)))
+            y += 24
+        y += 10
+    end_y = y + 6
+    height = end_y + 34
+
+    body.append(
+        f'  <rect x="0.75" y="0.75" width="998.5" height="{height - 1.5}" rx="3" '
+        f'stroke="{palette["rule"]}" stroke-width="1.5" fill="none"/>'
+    )
+    body.append(f'  <line x1="1" y1="38" x2="999" y2="38" stroke="{palette["rule"]}" stroke-width="1"/>')
+    for i, cx in enumerate((22, 36, 50)):
+        body.append(f'  <circle cx="{cx}" cy="19" r="3.4" fill="{palette["dim"]}" opacity="{0.9 - i * 0.18}"/>')
+    body.append(text_el(978, 23, 10, palette["muted"], title, ls=2, anchor="end"))
+
+    body.append(
+        text_el(24, prompt_y, 13, palette["accent"], prompt, cls="fade", style=anim(prompt_y))
+    )
+
+    for line_y, key, item in layout:
+        if item is None:
+            body.append(text_el(24, line_y, 11, palette["muted"], key, ls=2.4, cls="rise", style=anim(line_y)))
+        else:
+            body.append(
+                text_el(28, line_y, 13, palette["accent"], "▸", opacity=0.75, cls="rise", style=anim(line_y))
+            )
+            body.append(text_el(44, line_y, 13, palette["bone"], item, cls="rise", style=anim(line_y)))
+
+    body.append(text_el(24, end_y, 13, palette["dim"], "~$", cls="fade", style=anim(end_y)))
+    body.append(
+        f'  <rect class="cursor" x="48" y="{end_y - 13}" width="8" height="16" fill="{palette["accent"]}"/>'
+    )
+
+    aria = "Current focus — learning, building, exploring"
+    return wrap(height, aria, "\n".join(body), palette)
 
 
 def build_footer(data: dict, palette: dict) -> str:
-    """Builds footer status panel with pulsing indicator."""
+    """Footer status strip with a pulsing indicator."""
     footer = data.get("footer", {})
-    status = footer.get("status", "STATUS — SHIPPING")
-    line = footer.get("line", "compiling ideas into high-throughput systems, usually after midnight")
-    right = footer.get("right", "iamekansh.netlify.app  ·  Delhi NCR, IN  ·  © 2026")
+    status = footer.get("status", "STATUS — BUILDING")
+    line = footer.get("line", "shipping first, polishing second, sleeping eventually")
+    right = footer.get("right", "iamekansh.netlify.app  ·  India  ·  © 2026")
 
     body = f"""  <line class="draw {delay(1)}" x1="48" y1="24" x2="952" y2="24" stroke="{palette['rule']}" stroke-width="1"/>
   <!-- Status Ring & Dot -->
@@ -532,7 +693,4 @@ def build_all(profile_path: Path, output_dir: Path) -> None:
 
 
 if __name__ == "__main__":
-    base_dir = Path(__file__).resolve().parent.parent
-    prof_path = base_dir / "profile.json"
-    assets_dir = base_dir / "assets"
-    build_all(prof_path, assets_dir)
+    build_all(BASE_DIR / "profile.json", BASE_DIR / "assets")
