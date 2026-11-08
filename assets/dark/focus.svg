@@ -61,11 +61,11 @@
   <text class="mono fade" x="24" y="66" font-size="13" fill="#FFFFFF" style="animation-delay: 0.0s">ekansh@focus:~$ cat now.yml</text>
   <text class="mono rise" x="24" y="96" font-size="11" fill="#8C8C8C" letter-spacing="2.4" style="animation-delay: 0.09s">LEARNING</text>
   <text class="mono rise" x="28" y="120" font-size="13" fill="#FFFFFF" style="animation-delay: 0.18s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="120" font-size="13" fill="#E6E6E6" style="animation-delay: 0.27s">Quantitative trading fundamentals &amp; market microstructure</text>
+  <text class="mono rise" x="44" y="120" font-size="13" fill="#E6E6E6" style="animation-delay: 0.27s">Understanding machine learning algorithms, neural networks, model training, and evaluation.</text>
   <text class="mono rise" x="28" y="144" font-size="13" fill="#FFFFFF" style="animation-delay: 0.36s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="144" font-size="13" fill="#E6E6E6" style="animation-delay: 0.45s">Advanced PostgreSQL — query optimisation, indexing</text>
+  <text class="mono rise" x="44" y="144" font-size="13" fill="#E6E6E6" style="animation-delay: 0.45s">Exploring LLMs, RAG, inference, context engineering, and production-ready AI systems.</text>
   <text class="mono rise" x="28" y="168" font-size="13" fill="#FFFFFF" style="animation-delay: 0.54s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="168" font-size="13" fill="#E6E6E6" style="animation-delay: 0.63s">Distributed systems &amp; the CAP theorem</text>
+  <text class="mono rise" x="44" y="168" font-size="13" fill="#E6E6E6" style="animation-delay: 0.63s">Learning multi-agent coordination, tool calling, task delegation, communication, and orchestration frameworks.</text>
   <text class="mono rise" x="24" y="202" font-size="11" fill="#8C8C8C" letter-spacing="2.4" style="animation-delay: 0.72s">BUILDING</text>
   <text class="mono rise" x="28" y="226" font-size="13" fill="#FFFFFF" style="animation-delay: 0.81s" opacity="0.75">▸</text>
   <text class="mono rise" x="44" y="226" font-size="13" fill="#E6E6E6" style="animation-delay: 0.9s">Finance dashboard with React and live market feeds</text>
@@ -75,11 +75,11 @@
   <text class="mono rise" x="44" y="274" font-size="13" fill="#E6E6E6" style="animation-delay: 1.26s">A stealth health-tech product</text>
   <text class="mono rise" x="24" y="308" font-size="11" fill="#8C8C8C" letter-spacing="2.4" style="animation-delay: 1.35s">EXPLORING</text>
   <text class="mono rise" x="28" y="332" font-size="13" fill="#FFFFFF" style="animation-delay: 1.44s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="332" font-size="13" fill="#E6E6E6" style="animation-delay: 1.53s">Prediction-market modelling &amp; probability calibration</text>
+  <text class="mono rise" x="44" y="332" font-size="13" fill="#E6E6E6" style="animation-delay: 1.53s">Experimenting with systems that automate the creation, configuration, and deployment of multi-agent systems.</text>
   <text class="mono rise" x="28" y="356" font-size="13" fill="#FFFFFF" style="animation-delay: 1.62s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="356" font-size="13" fill="#E6E6E6" style="animation-delay: 1.71s">Low-latency systems in C++</text>
+  <text class="mono rise" x="44" y="356" font-size="13" fill="#E6E6E6" style="animation-delay: 1.71s">Building autonomous agents that can plan, execute tasks, use tools, and collaborate to solve complex problems.</text>
   <text class="mono rise" x="28" y="380" font-size="13" fill="#FFFFFF" style="animation-delay: 1.8s" opacity="0.75">▸</text>
-  <text class="mono rise" x="44" y="380" font-size="13" fill="#E6E6E6" style="animation-delay: 1.89s">Algo trading systems</text>
+  <text class="mono rise" x="44" y="380" font-size="13" fill="#E6E6E6" style="animation-delay: 1.89s">Exploring AI-powered coding, self-improving workflows, and autonomous software development systems.</text>
   <text class="mono fade" x="24" y="420" font-size="13" fill="#666666" style="animation-delay: 1.98s">~$</text>
   <rect class="cursor" x="48" y="407" width="8" height="16" fill="#FFFFFF"/>
 </svg>

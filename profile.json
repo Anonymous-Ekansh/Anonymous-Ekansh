@@ -253,25 +253,17 @@
       "Agentic pipelines · ONNX · embeddings · Sarvam AI · Groq · NLP"
     ],
     [
-      "QUANT",
-      "Algo trading · market microstructure · Polymarket data · crypto markets"
-    ],
-    [
       "INFRA",
       "Vercel · Render · Netlify · AWS S3 · GitHub Actions · Linux · Git"
-    ],
-    [
-      "TESTING",
-      "Pytest · pgTAP · Playwright"
     ]
   ],
   "focus": {
     "title": "NOW.YML",
     "prompt": "ekansh@focus:~$ cat now.yml",
     "learning": [
-      "Quantitative trading fundamentals & market microstructure",
-      "Advanced PostgreSQL — query optimisation, indexing",
-      "Distributed systems & the CAP theorem"
+      "Understanding machine learning algorithms, neural networks, model training, and evaluation.",
+      "Exploring LLMs, RAG, inference, context engineering, and production-ready AI systems.",
+      "Learning multi-agent coordination, tool calling, task delegation, communication, and orchestration frameworks."
     ],
     "building": [
       "Finance dashboard with React and live market feeds",
@@ -279,9 +271,9 @@
       "A stealth health-tech product"
     ],
     "exploring": [
-      "Prediction-market modelling & probability calibration",
-      "Low-latency systems in C++",
-      "Algo trading systems"
+      "Experimenting with systems that automate the creation, configuration, and deployment of multi-agent systems.",
+      "Building autonomous agents that can plan, execute tasks, use tools, and collaborate to solve complex problems.",
+      "Exploring AI-powered coding, self-improving workflows, and autonomous software development systems."
     ]
   },
   "footer": {
