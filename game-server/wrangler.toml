@@ -11,7 +11,7 @@ enabled = true
 [[d1_databases]]
 binding = "DB"
 database_name = "arena"
-database_id = "PASTE_D1_DATABASE_ID_HERE"
+database_id = "eee0c6fc-3a64-4b99-8043-45594f331cde"
 
 [vars]
 PROFILE_URL = "https://github.com/Anonymous-Ekansh"
