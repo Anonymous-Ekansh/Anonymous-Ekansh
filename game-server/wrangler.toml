@@ -1,0 +1,22 @@
+name = "arena"
+main = "src/index.ts"
+compatibility_date = "2026-11-01"
+workers_dev = true
+
+[observability]
+enabled = true
+
+# Created with: npx wrangler d1 create arena
+# Paste the database_id printed by that command (and by `npx wrangler d1 list`).
+[[d1_databases]]
+binding = "DB"
+database_name = "arena"
+database_id = "PASTE_D1_DATABASE_ID_HERE"
+
+[vars]
+PROFILE_URL = "https://github.com/Anonymous-Ekansh"
+
+# Secrets (never commit them):
+#   npx wrangler secret put RATE_SALT
+# RATE_SALT is optional; without it the Worker falls back to a fixed public salt,
+# which still avoids storing raw IPs but is not a secret.
