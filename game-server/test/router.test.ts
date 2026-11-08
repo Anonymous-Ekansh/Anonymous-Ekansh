@@ -71,7 +71,9 @@ describe("router", () => {
     expect(res.headers.get("cache-control")).toBe("no-cache, max-age=0, must-revalidate");
     expect(res.headers.get("x-content-type-options")).toBe("nosniff");
     expect(res.headers.get("content-security-policy")).toContain("default-src 'none'");
-    expect(res.headers.get("etag")).toBe('"ttt-0-light-tile-4"');
+    // The validator carries a hash of the body, so a rendering change can never revalidate a
+    // cached copy of the old bytes: tag, then eight hex characters.
+    expect(res.headers.get("etag")).toMatch(/^"ttt-0-light-tile-4-[0-9a-f]{8}"$/);
     expect(await res.text()).toContain("<svg");
   });
 
@@ -145,11 +147,11 @@ describe("router", () => {
 
     const tile = await call("/c/tile/e4.svg", { store });
     const svg = await tile.text();
-    expect(svg).toContain('width="44"');
+    expect(svg).toContain('width="52"');
     expect(svg).toContain("white p");
 
     const status = await (await call("/c/status.svg", { store })).text();
-    expect(status).toContain("last: e4");
+    expect(status).toContain("last e4");
   });
 
   it("serves the status, recent and play routes", async () => {
@@ -264,7 +266,7 @@ describe("router", () => {
     // The same cookie cannot answer its own move.
     expect((await call("/c/click/e7", { store, ip, now: t0 + 2_000, headers: withCookie(mine) })).status).toBe(302);
     expect((await call("/c/click/e5", { store, ip, now: t0 + 2_500, headers: withCookie(mine) })).status).toBe(302);
-    expect(await (await call("/c/status.svg", { store })).text()).toContain("last: e4");
+    expect(await (await call("/c/status.svg", { store })).text()).toContain("last e4");
 
     // A different cookie on the same IP can answer.
     expect((await call("/c/click/e7", { store, ip, now: t0 + 3_000, headers: withCookie(other) })).status).toBe(302);
@@ -366,7 +368,7 @@ describe("router", () => {
 
     const recent = await (await call("/c/recent.svg", { store })).text();
     for (const san of ["d4", "d5", "Nf3", "Nc6"]) expect(recent).toContain(san);
-    expect(await (await call("/c/status.svg", { store })).text()).toContain("last: Nc6");
+    expect(await (await call("/c/status.svg", { store })).text()).toContain("last Nc6");
   });
 
   it("does not let one visitor's cooldown throttle another on the same IP", async () => {
@@ -389,7 +391,7 @@ describe("router", () => {
 
     const bMove = await call("/c/click/f3", { store, ip, now: t + 2_000, headers: withCookie(b) });
     expect(bMove.status).toBe(302);
-    expect(await (await call("/c/status.svg", { store })).text()).toContain("last: Nf3");
+    expect(await (await call("/c/status.svg", { store })).text()).toContain("last Nf3");
   });
 
   it("sends the visitor cookie from the /play page", async () => {

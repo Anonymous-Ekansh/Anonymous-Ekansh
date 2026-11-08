@@ -1,9 +1,9 @@
 /**
  * Every SVG the Worker serves must be well-formed XML.
  *
- * An unescaped quote in one attribute (the old double-quoted "SF Mono" inside a double-quoted
- * font-family, for instance) is enough to make a whole tile unparseable, and GitHub then shows
- * a broken image instead of a board. This test renders every endpoint for both themes and hands
+ * An unescaped quote in one attribute (a double-quoted "SF Mono" inside a double-quoted
+ * font-family, for instance) is enough to make a whole tile unparseable, and GitHub then shows a
+ * broken image instead of a board. This suite renders every endpoint for both themes and hands
  * each document to an XML parser, so a regression fails the build rather than the README.
  */
 
@@ -11,7 +11,7 @@ import { XMLValidator } from "fast-xml-parser";
 import { describe, expect, it } from "vitest";
 
 import { route } from "../src/index";
-import { MONO } from "../src/svg";
+import { MONO, placeholderSvg } from "../src/svg";
 import { MemoryStore } from "../src/store";
 
 const BROWSER =
@@ -68,13 +68,31 @@ const RUNNING_TTT = {
   record: { visitors: 2, bot: 1, draws: 1 },
 };
 
-const OVER_TTT = {
+const WON_TTT = {
   board: ["X", "X", "X", "O", "O", null, null, null, null],
   over: true,
   line: [0, 1, 2],
   result: "win",
   game: 5,
   record: { visitors: 3, bot: 1, draws: 1 },
+};
+
+const LOST_TTT = {
+  board: ["X", null, "X", "O", "O", "O", "X", null, null],
+  over: true,
+  line: [3, 4, 5],
+  result: "loss",
+  game: 6,
+  record: { visitors: 3, bot: 2, draws: 1 },
+};
+
+const DRAW_TTT = {
+  board: ["X", "O", "X", "X", "O", "O", "O", "X", "X"],
+  over: true,
+  line: null,
+  result: "draw",
+  game: 7,
+  record: { visitors: 3, bot: 2, draws: 2 },
 };
 
 function store(chess: object, ttt: object): MemoryStore {
@@ -95,16 +113,32 @@ async function render(store: MemoryStore, path: string): Promise<string> {
   const verdict = XMLValidator.validate(body);
   const detail = verdict === true ? "" : ` at line ${verdict.err.line}, col ${verdict.err.col}: ${verdict.err.msg}`;
   expect(verdict === true, `${path} is not well-formed XML${detail}`).toBe(true);
+  // A parser tolerates a character reference; this catches a value pasted in raw.
+  expect(body, `${path} has an unescaped &`).not.toMatch(/&(?!(?:amp|lt|gt|quot|apos|#\d+|#x[0-9a-fA-F]+);)/);
+  // Every root element must be fully specified, or some renderers draw it at 150x150.
+  expect(body).toContain('xmlns="http://www.w3.org/2000/svg"');
+  expect(body).toContain("viewBox=");
   return body;
 }
 
 describe("svg documents", () => {
-  it("keeps the font stack free of double quotes", () => {
-    expect(MONO).not.toContain('"');
-    expect(MONO).toContain("'SF Mono'");
+  it("keeps the font stack free of quotes", () => {
+    // Any quote inside the stack would sit inside a double-quoted attribute value.
+    expect(MONO).not.toMatch(/["']/);
+    expect(MONO).toContain("monospace");
   });
 
-  it("renders every chess tile, both themes, for three board states", async () => {
+  it("falls back to a valid placeholder document, never a broken image", () => {
+    for (const theme of THEMES) {
+      const svg = placeholderSvg(76, 26, theme);
+      expect(XMLValidator.validate(svg)).toBe(true);
+      expect(svg).toContain('width="76"');
+      expect(svg).toContain('height="26"');
+      expect(svg).toContain('viewBox="0 0 76 26"');
+    }
+  });
+
+  it("renders every chess tile at 52px, both themes, for three board states", async () => {
     for (const state of [OPEN_CHESS, RICH_CHESS, CHECK_CHESS]) {
       const s = store(state, RUNNING_TTT);
       for (const theme of THEMES) {
@@ -112,43 +146,57 @@ describe("svg documents", () => {
           for (const rank of RANKS) {
             const svg = await render(s, `/c/tile/${file}${rank}.svg?theme=${theme}`);
             expect(svg).toContain(`aria-label="${file}${rank}:`);
-            expect(svg).toContain('width="44"');
+            expect(svg).toContain('width="52"');
           }
         }
       }
     }
   });
 
-  it("renders the chess status and recent banners, both themes", async () => {
+  it("renders the 416px chess banners, both themes", async () => {
     for (const state of [OPEN_CHESS, RICH_CHESS, CHECK_CHESS]) {
       const s = store(state, RUNNING_TTT);
       for (const theme of THEMES) {
-        const status = await render(s, `/c/status.svg?theme=${theme}`);
-        expect(status).toContain('width="540"');
-        const recent = await render(s, `/c/recent.svg?theme=${theme}`);
-        expect(recent).toContain('width="540"');
+        expect(await render(s, `/c/status.svg?theme=${theme}`)).toContain('width="416"');
+        expect(await render(s, `/c/recent.svg?theme=${theme}`)).toContain('width="416"');
       }
     }
   });
 
-  it("renders every tic-tac-toe tile, both themes, running and over", async () => {
-    for (const state of [RUNNING_TTT, OVER_TTT]) {
+  it("renders every tic-tac-toe tile at 76px in every state, both themes", async () => {
+    for (const state of [RUNNING_TTT, WON_TTT, LOST_TTT, DRAW_TTT]) {
       const s = store(OPEN_CHESS, state);
       for (const theme of THEMES) {
         for (let i = 0; i < 9; i += 1) {
           const svg = await render(s, `/t/tile/${i}.svg?theme=${theme}`);
-          expect(svg).toContain('width="72"');
+          expect(svg).toContain('width="76"');
         }
       }
     }
   });
 
-  it("renders the tic-tac-toe status banner, both themes", async () => {
-    for (const state of [RUNNING_TTT, OVER_TTT]) {
+  it("renders the 228px tic-tac-toe banner in every state, both themes", async () => {
+    for (const state of [RUNNING_TTT, WON_TTT, LOST_TTT, DRAW_TTT]) {
       const s = store(OPEN_CHESS, state);
       for (const theme of THEMES) {
-        const svg = await render(s, `/t/status.svg?theme=${theme}`);
-        expect(svg).toContain('width="320"');
+        expect(await render(s, `/t/status.svg?theme=${theme}`)).toContain('width="228"');
+      }
+    }
+  });
+
+  it("renders the header strips, buttons and credit line, both themes", async () => {
+    const s = store(RICH_CHESS, RUNNING_TTT);
+    const chrome: Array<[string, string]> = [
+      ["/c/header.svg", 'width="416"'],
+      ["/t/header.svg", 'width="228"'],
+      ["/c/button.svg", 'width="124"'],
+      ["/t/button.svg", 'width="92"'],
+      ["/footer.svg", 'width="416"'],
+    ];
+    for (const theme of THEMES) {
+      for (const [path, expected] of chrome) {
+        const svg = await render(s, `${path}?theme=${theme}`);
+        expect(svg, path).toContain(expected);
       }
     }
   });

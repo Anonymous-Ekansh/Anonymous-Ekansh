@@ -34,7 +34,29 @@ import {
   vidSetCookie,
 } from "./security";
 import { D1Store, MemoryStore, type StateRow, type StoreLike } from "./store";
-import { chessRecentSvg, chessStatusSvg, chessTileSvg, parseTheme, tttStatusSvg, tttTileSvg, type Theme } from "./svg";
+import {
+  BANNER_HEIGHT,
+  CHESS_BANNER_WIDTH,
+  CHESS_BUTTON_WIDTH,
+  CHESS_TILE_SIZE,
+  chessRecentSvg,
+  chessStatusSvg,
+  chessTileSvg,
+  buttonSvg,
+  FOOTER_HEIGHT,
+  FOOTER_WIDTH,
+  footerSvg,
+  HEADER_HEIGHT,
+  headerSvg,
+  parseTheme,
+  placeholderSvg,
+  TTT_BANNER_WIDTH,
+  TTT_BUTTON_WIDTH,
+  TTT_TILE_SIZE,
+  tttStatusSvg,
+  tttTileSvg,
+  type Theme,
+} from "./svg";
 import {
   applyVisitorMove,
   initialTtt,
@@ -140,6 +162,14 @@ export async function route(request: Request, env: Env = {}, deps: Deps = {}): P
   if (path === "/c/status.svg") return chessStatusImage(ctx, theme, request);
   if (path === "/c/recent.svg") return chessRecentImage(ctx, theme, request);
 
+  // Static chrome: the README's headers, buttons and credit line. They carry no game state, so
+  // they exist only because GitHub strips CSS and a themed strip has to be an image.
+  if (path === "/c/header.svg") return chrome(() => headerSvg("chess", theme), "chess-header", CHESS_BANNER_WIDTH, HEADER_HEIGHT, theme, request);
+  if (path === "/t/header.svg") return chrome(() => headerSvg("ttt", theme), "ttt-header", TTT_BANNER_WIDTH, HEADER_HEIGHT, theme, request);
+  if (path === "/c/button.svg") return chrome(() => buttonSvg("chess", theme), "chess-button", CHESS_BUTTON_WIDTH, BANNER_HEIGHT, theme, request);
+  if (path === "/t/button.svg") return chrome(() => buttonSvg("ttt", theme), "ttt-button", TTT_BUTTON_WIDTH, BANNER_HEIGHT, theme, request);
+  if (path === "/footer.svg") return chrome(() => footerSvg(theme), "footer", FOOTER_WIDTH, FOOTER_HEIGHT, theme, request);
+
   if (path === "/play") return htmlResponse(playPage(ctx.profile));
   if (path === "/api/state") return snapshot(ctx);
   if (path === "/" ) return res(null, 302, { Location: "/play", "Cache-Control": NO_STORE });
@@ -244,12 +274,24 @@ function moveDone(ctx: Ctx, who: Visitor, kind: string, version: number): Respon
 
 async function tttTile(ctx: Ctx, i: number, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadTtt(ctx);
-  return svgResponse(tttTileSvg(state, i, theme), `ttt-${version}-${theme}-tile-${i}`, request);
+  return safeSvg(() => tttTileSvg(state, i, theme), {
+    tag: `ttt-${version}-${theme}-tile-${i}`,
+    width: TTT_TILE_SIZE,
+    height: TTT_TILE_SIZE,
+    theme,
+    request,
+  });
 }
 
 async function tttStatusImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadTtt(ctx);
-  return svgResponse(tttStatusSvg(state, theme), `ttt-${version}-${theme}-status`, request);
+  return safeSvg(() => tttStatusSvg(state, theme), {
+    tag: `ttt-${version}-${theme}-status`,
+    width: TTT_BANNER_WIDTH,
+    height: BANNER_HEIGHT,
+    theme,
+    request,
+  });
 }
 
 async function tttClick(ctx: Ctx, i: number, request: Request): Promise<Response> {
@@ -293,17 +335,35 @@ async function tttNew(ctx: Ctx, request: Request): Promise<Response> {
 
 async function chessTile(ctx: Ctx, sq: string, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(chessTileSvg(state, sq, theme, ctx.now()), `chess-${version}-${theme}-${sq}`, request);
+  return safeSvg(() => chessTileSvg(state, sq, theme, ctx.now()), {
+    tag: `chess-${version}-${theme}-${sq}`,
+    width: CHESS_TILE_SIZE,
+    height: CHESS_TILE_SIZE,
+    theme,
+    request,
+  });
 }
 
 async function chessStatusImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(chessStatusSvg(state, theme), `chess-${version}-${theme}-status`, request);
+  return safeSvg(() => chessStatusSvg(state, theme), {
+    tag: `chess-${version}-${theme}-status`,
+    width: CHESS_BANNER_WIDTH,
+    height: BANNER_HEIGHT,
+    theme,
+    request,
+  });
 }
 
 async function chessRecentImage(ctx: Ctx, theme: Theme, request: Request): Promise<Response> {
   const { state, version } = await loadChess(ctx);
-  return svgResponse(chessRecentSvg(state, theme), `chess-${version}-${theme}-recent`, request);
+  return safeSvg(() => chessRecentSvg(state, theme), {
+    tag: `chess-${version}-${theme}-recent`,
+    width: CHESS_BANNER_WIDTH,
+    height: BANNER_HEIGHT,
+    theme,
+    request,
+  });
 }
 
 async function chessClickRoute(ctx: Ctx, sq: string, request: Request): Promise<Response> {
@@ -490,8 +550,59 @@ async function limitResponse(ctx: Ctx, kind: "move" | "select", who: Visitor): P
   return null;
 }
 
+/**
+ * FNV-1a over the rendered document.
+ *
+ * The ETag used to be the state tag alone ("chess-3-light-a8"), so a rendering change produced
+ * identical validators while the bytes differed. GitHub's image proxy revalidated, got its 304
+ * and kept serving the old broken image for that URL. Hashing the body makes every change a new
+ * validator, so a stale copy can never survive a deploy.
+ */
+function bodyHash(svg: string): string {
+  let h = 0x811c9dc5;
+  for (let i = 0; i < svg.length; i += 1) {
+    h ^= svg.charCodeAt(i);
+    h = Math.imul(h, 0x01000193) >>> 0;
+  }
+  return h.toString(16).padStart(8, "0");
+}
+
+/** Renders behind a try/catch: a failure is a quiet placeholder, never a broken image. */
+function safeSvg(
+  render: () => string,
+  opts: { tag: string; width: number; height: number; theme: Theme; request: Request },
+): Response {
+  let svg: string;
+  try {
+    svg = render();
+  } catch (err) {
+    console.error(`[arena] svg ${opts.tag} failed: ${String(err)}`);
+    return new Response(placeholderSvg(opts.width, opts.height, opts.theme), {
+      status: 200,
+      headers: {
+        "Content-Type": "image/svg+xml; charset=utf-8",
+        "Cache-Control": "no-store",
+        "X-Content-Type-Options": "nosniff",
+      },
+    });
+  }
+  return svgResponse(svg, opts.tag, opts.request);
+}
+
+/** Chrome renders are pure functions of (kind, theme): safeSvg with a fixed tag. */
+function chrome(
+  render: () => string,
+  tag: string,
+  width: number,
+  height: number,
+  theme: Theme,
+  request: Request,
+): Response {
+  return safeSvg(render, { tag, width, height, theme, request });
+}
+
 function svgResponse(svg: string, tag: string, request: Request): Response {
-  const etag = `"${tag}"`;
+  const etag = `"${tag}-${bodyHash(svg)}"`;
   const headers: Record<string, string> = {
     "Content-Type": "image/svg+xml; charset=utf-8",
     "Cache-Control": "no-cache, max-age=0, must-revalidate",

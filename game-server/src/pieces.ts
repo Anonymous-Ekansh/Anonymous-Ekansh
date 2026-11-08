@@ -1,21 +1,43 @@
 /**
- * Geometric monochrome chess pieces, drawn for this project (public domain / CC0).
- * No Unicode chess glyphs and no web fonts: every shape is a plain path or primitive in a
- * 44x44 view box, so rendering is identical in every browser and font stack.
+ * Chess pieces: the Cburnett set, the Lichess default.
  *
- * White pieces are stroked outlines, black pieces are filled silhouettes; the colour comes
- * from the wrapper <g> (server) or CSS (the /play page).
+ * Source: https://github.com/lichess-org/lila/tree/master/public/piece/cburnett
+ * Licence: CC BY-SA 3.0 — see ASSETS-LICENSE.md. Attribution is carried in the README block
+ * footer and in the /play page footer, and the pieces stay under the same licence.
+ *
+ * The bodies are the original 45x45 artwork; ink is applied at render time so a single copy
+ * serves both themes. Do not replace these with Unicode glyphs or silhouettes: the knight's
+ * head, mane, ear and eye are the reason the set reads at 52px.
  */
 
 export type PieceType = "p" | "n" | "b" | "r" | "q" | "k";
+export type PieceColor = "w" | "b";
 
-export const PIECE_SHAPES: Record<PieceType, string> = {
-  p: '<circle cx="22" cy="15.4" r="4.1"/><path d="M16.9 31.4h10.2l-2-7.5h-6.2z"/><rect x="13.9" y="32.2" width="16.2" height="2.8" rx="1.4"/>',
-  n: '<path d="M27.2 11.2 29.4 17.2 33.6 19.2 30.6 25.2 32.4 33.6H13.6L15.4 26.6 21.4 19.4 19.8 13.2Z"/><rect x="12.6" y="33.4" width="18.8" height="2.9" rx="1.4"/>',
-  b: '<circle cx="22" cy="11.6" r="2.1"/><path d="M22 15.4c4.1 3.5 6.3 6.6 6.3 9.6 0 2.6-2.8 4.3-6.3 4.3s-6.3-1.7-6.3-4.3c0-3 2.2-6.1 6.3-9.6z"/><rect x="15.3" y="29.9" width="13.4" height="2.6" rx="1.3"/><rect x="13.6" y="33.4" width="16.8" height="2.8" rx="1.4"/>',
-  r: '<path d="M14.2 13h3.4v2.6h3.6V13h1.6v2.6h3.6V13h3.4v6l-2.9 2.4v9.2l2.9 2.4v1.4H14.2v-1.4l2.9-2.4v-9.2L14.2 19z"/>',
-  q: '<circle cx="13" cy="16.2" r="2"/><circle cx="22" cy="11.8" r="2.2"/><circle cx="31" cy="16.2" r="2"/><path d="M12.6 18.4 17.4 30.6h9.2l4.8-12.2-6 4.6L22 14.6l-3.4 8.4z"/><rect x="13.2" y="31.8" width="17.6" height="3" rx="1.5"/>',
-  k: '<path d="M22 8.4v6.2M18.9 11.5h6.2" stroke-width="2.2"/><path d="M12.8 19.2 17.6 30.6h8.8l4.8-11.4-5.8 4.4L22 15.4l-3.4 8.2z"/><rect x="13.4" y="31.8" width="17.2" height="3" rx="1.5"/>',
+/** One entry per theme: what white and black are painted with. */
+export interface PieceInk {
+  whiteFill: string;
+  whiteStroke: string;
+  blackFill: string;
+  blackStroke: string;
+  detail: string;
+}
+
+export const PIECES_CREDIT = "pieces: Cburnett, CC BY-SA 3.0";
+
+/** 45x45 viewBox bodies, exactly as published. */
+const BODIES: Record<string, string> = {
+  wK: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path stroke-linejoin="miter" d="M22.5 11.63V6M20 8h5"/><path fill="#fff" stroke-linecap="butt" stroke-linejoin="miter" d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5"/><path fill="#fff" d="M11.5 37c5.5 3.5 15.5 3.5 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10z"/><path d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/></g>`,
+  wQ: `<g fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path d="M8 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0m16.5-4.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0M41 12a2 2 0 1 1-4 0 2 2 0 1 1 4 0M16 8.5a2 2 0 1 1-4 0 2 2 0 1 1 4 0M33 9a2 2 0 1 1-4 0 2 2 0 1 1 4 0"/><path stroke-linecap="butt" d="M9 26c8.5-1.5 21-1.5 27 0l2-12-7 11V11l-5.5 13.5-3-15-3 15-5.5-14V25L7 14z"/><path stroke-linecap="butt" d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z"/><path fill="none" d="M11.5 30c3.5-1 18.5-1 22 0M12 33.5c6-1 15-1 21 0"/></g>`,
+  wR: `<g fill="#fff" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path stroke-linecap="butt" d="M9 39h27v-3H9zm3-3v-4h21v4zm-1-22V9h4v2h5V9h5v2h5V9h4v5"/><path d="m34 14-3 3H14l-3-3"/><path stroke-linecap="butt" stroke-linejoin="miter" d="M31 17v12.5H14V17"/><path d="m31 29.5 1.5 2.5h-20l1.5-2.5"/><path fill="none" stroke-linejoin="miter" d="M11 14h23"/></g>`,
+  wB: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g fill="#fff" stroke-linecap="butt"><path d="M9 36c3.39-.97 10.11.43 13.5-2 3.39 2.43 10.11 1.03 13.5 2 0 0 1.65.54 3 2-.68.97-1.65.99-3 .5-3.39-.97-10.11.46-13.5-1-3.39 1.46-10.11.03-13.5 1-1.35.49-2.32.47-3-.5 1.35-1.94 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path stroke-linejoin="miter" d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5"/></g>`,
+  wN: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path fill="#fff" d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path fill="#fff" d="M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.042-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4.003 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-.994-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-1.992 2.5-3c1 0 1 3 1 3"/><path fill="#000" d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 1 1 1 0m5.433-9.75a.5 1.5 30 1 1-.866-.5.5 1.5 30 1 1 .866.5"/></g>`,
+  wP: `<path fill="#fff" stroke="#000" stroke-linecap="round" stroke-width="1.5" d="M22.5 9c-2.21 0-4 1.79-4 4 0 .89.29 1.71.78 2.38C17.33 16.5 16 18.59 16 21c0 2.03.94 3.84 2.41 5.03-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47 1.47-1.19 2.41-3 2.41-5.03 0-2.41-1.33-4.5-3.28-5.62.49-.67.78-1.49.78-2.38 0-2.21-1.79-4-4-4z"/>`,
+  bK: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path stroke-linejoin="miter" d="M22.5 11.6V6"/><path fill="#000" stroke-linecap="butt" stroke-linejoin="miter" d="M22.5 25s4.5-7.5 3-10.5c0 0-1-2.5-3-2.5s-3 2.5-3 2.5c-1.5 3 3 10.5 3 10.5"/><path fill="#000" d="M11.5 37a22.3 22.3 0 0 0 21 0v-7s9-4.5 6-10.5c-4-6.5-13.5-3.5-16 4V27v-3.5c-3.5-7.5-13-10.5-16-4-3 6 5 10 5 10z"/><path stroke-linejoin="miter" d="M20 8h5"/><path stroke="#ececec" d="M32 29.5s8.5-4 6-9.7C34.1 14 25 18 22.5 24.6v2.1-2.1C20 18 9.9 14 7 19.9c-2.5 5.6 4.8 9 4.8 9"/><path stroke="#ececec" d="M11.5 30c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0m-21 3.5c5.5-3 15.5-3 21 0"/></g>`,
+  bQ: `<g fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g stroke="none"><circle cx="6" cy="12" r="2.75"/><circle cx="14" cy="9" r="2.75"/><circle cx="22.5" cy="8" r="2.75"/><circle cx="31" cy="9" r="2.75"/><circle cx="39" cy="12" r="2.75"/></g><path stroke-linecap="butt" d="M9 26c8.5-1.5 21-1.5 27 0l2.5-12.5L31 25l-.3-14.1-5.2 13.6-3-14.5-3 14.5-5.2-13.6L14 25 6.5 13.5z"/><path stroke-linecap="butt" d="M9 26c0 2 1.5 2 2.5 4 1 1.5 1 1 .5 3.5-1.5 1-1.5 2.5-1.5 2.5-1.5 1.5.5 2.5.5 2.5 6.5 1 16.5 1 23 0 0 0 1.5-1 0-2.5 0 0 .5-1.5-1-2.5-.5-2.5-.5-2 .5-3.5 1-2 2.5-2 2.5-4-8.5-1.5-18.5-1.5-27 0z"/><path fill="none" stroke-linecap="butt" d="M11 38.5a35 35 1 0 0 23 0"/><path fill="none" stroke="#ececec" d="M11 29a35 35 1 0 1 23 0m-21.5 2.5h20m-21 3a35 35 1 0 0 22 0m-23 3a35 35 1 0 0 24 0"/></g>`,
+  bR: `<g fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path stroke-linecap="butt" d="M9 39h27v-3H9zm3.5-7 1.5-2.5h17l1.5 2.5zm-.5 4v-4h21v4z"/><path stroke-linecap="butt" stroke-linejoin="miter" d="M14 29.5v-13h17v13z"/><path stroke-linecap="butt" d="M14 16.5 11 14h23l-3 2.5zM11 14V9h4v2h5V9h5v2h5V9h4v5z"/><path fill="none" stroke="#ececec" stroke-linejoin="miter" stroke-width="1" d="M12 35.5h21m-20-4h19m-18-2h17m-17-13h17M11 14h23"/></g>`,
+  bB: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><g fill="#000" stroke-linecap="butt"><path d="M9 36c3.4-1 10.1.4 13.5-2 3.4 2.4 10.1 1 13.5 2 0 0 1.6.5 3 2-.7 1-1.6 1-3 .5-3.4-1-10.1.5-13.5-1-3.4 1.5-10.1 0-13.5 1-1.4.5-2.3.5-3-.5 1.4-2 3-2 3-2z"/><path d="M15 32c2.5 2.5 12.5 2.5 15 0 .5-1.5 0-2 0-2 0-2.5-2.5-4-2.5-4 5.5-1.5 6-11.5-5-15.5-11 4-10.5 14-5 15.5 0 0-2.5 1.5-2.5 4 0 0-.5.5 0 2z"/><path d="M25 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 1 1 5 0z"/></g><path stroke="#ececec" stroke-linejoin="miter" d="M17.5 26h10M15 30h15m-7.5-14.5v5M20 18h5"/></g>`,
+  bN: `<g fill="none" fill-rule="evenodd" stroke="#000" stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"><path fill="#000" d="M22 10c10.5 1 16.5 8 16 29H15c0-9 10-6.5 8-21"/><path fill="#000" d="M24 18c.38 2.91-5.55 7.37-8 9-3 2-2.82 4.34-5 4-1.04-.94 1.41-3.04 0-3-1 0 .19 1.23-1 2-1 0-4 1-4-4 0-2 6-12 6-12s1.89-1.9 2-3.5c-.73-1-.5-2-.5-3 1-1 3 2.5 3 2.5h2s.78-2 2.5-3c1 0 1 3 1 3"/><path fill="#ececec" stroke="#ececec" d="M9.5 25.5a.5.5 0 1 1-1 0 .5.5 0 1 1 1 0m5.43-9.75a.5 1.5 30 1 1-.86-.5.5 1.5 30 1 1 .86.5"/><path fill="#ececec" stroke="none" d="m24.55 10.4-.45 1.45.5.15c3.15 1 5.65 2.49 7.9 6.75S35.75 29.06 35.25 39l-.05.5h2.25l.05-.5c.5-10.06-.88-16.85-3.25-21.34s-5.79-6.64-9.19-7.16z"/></g>`,
+  bP: `<path stroke="#000" stroke-linecap="round" stroke-width="1.5" d="M22.5 9a4 4 0 0 0-3.22 6.38 6.48 6.48 0 0 0-.87 10.65c-3 1.06-7.41 5.55-7.41 13.47h23c0-7.92-4.41-12.41-7.41-13.47a6.46 6.46 0 0 0-.87-10.65A4.01 4.01 0 0 0 22.5 9z"/>`,
 };
 
 export const PIECE_NAMES: Record<PieceType, string> = {
@@ -27,18 +49,63 @@ export const PIECE_NAMES: Record<PieceType, string> = {
   k: "king",
 };
 
-/** The transform that keeps a piece clear of the coordinate labels in a 44x44 tile. */
-export const PIECE_TRANSFORM = "translate(6.2 5.6) scale(0.72)";
-
-export function isPieceType(v: string): v is PieceType {
+export function isPieceType(v: unknown): v is PieceType {
   return v === "p" || v === "n" || v === "b" || v === "r" || v === "q" || v === "k";
 }
 
-/** Server-side piece markup, coloured from the palette (outline = white, solid = black). */
-export function pieceSvg(type: PieceType, color: "w" | "b", ink: string): string {
-  const paint =
-    color === "w"
-      ? `fill="none" stroke="${ink}" stroke-width="1.9"`
-      : `fill="${ink}" stroke="${ink}" stroke-width="1.1"`;
-  return `<g ${paint} stroke-linejoin="round" stroke-linecap="round" transform="${PIECE_TRANSFORM}">${PIECE_SHAPES[type]}</g>`;
+/**
+ * Ink for both themes.
+ *
+ * White is a light body with a dark outline. Black is a solid dark body whose outline has to be
+ * light in the dark theme, otherwise the shape disappears into a dark square; the #ececec detail
+ * lines stay light in both, which is what keeps the black knight's mane and eye readable.
+ */
+export const PIECE_INK: Record<"light" | "dark", PieceInk> = {
+  light: { whiteFill: "#FFFFFF", whiteStroke: "#000000", blackFill: "#1A1A1A", blackStroke: "#000000", detail: "#ECECEC" },
+  dark: { whiteFill: "#F2F2F2", whiteStroke: "#111111", blackFill: "#1A1A1A", blackStroke: "#E6E6E6", detail: "#ECECEC" },
+};
+
+/**
+ * Cburnett writes everything in #000 / #fff / #ececec, so colouring is an attribute-level
+ * substitution: fills and strokes separately, which keeps the detail lines intact.
+ */
+export function recolour(body: string, color: PieceColor, ink: PieceInk): string {
+  if (color === "w") {
+    return body.replace(/#fff\b/g, ink.whiteFill).replace(/#000\b/g, ink.whiteStroke);
+  }
+  return body
+    .replace(/fill="#000"/g, `fill="${ink.blackFill}"`)
+    .replace(/stroke="#000"/g, `stroke="${ink.blackStroke}"`)
+    .replace(/#ececec/g, ink.detail);
+}
+
+function round(v: number, dp = 2): number {
+  const f = 10 ** dp;
+  return Math.round(v * f) / f;
+}
+
+/** One piece centred in a `size` px square. 0.92 keeps a hairline of square visible around it. */
+export function pieceSvg(type: PieceType, color: PieceColor, ink: PieceInk, size: number): string {
+  const body = BODIES[`${color}${type.toUpperCase()}`];
+  if (!body) return "";
+  const scale = (size / 45) * 0.92;
+  const offset = (size - 45 * scale) / 2;
+  return (
+    `<g transform="translate(${round(offset)} ${round(offset)}) scale(${round(scale, 4)})">` +
+    recolour(body, color, ink) +
+    "</g>"
+  );
+}
+
+/** Both themes keyed by piece id (wK, bN, …) for the /play page. */
+export function pieceSet(): Record<"light" | "dark", Record<string, string>> {
+  const out: Record<"light" | "dark", Record<string, string>> = { light: {}, dark: {} };
+  for (const theme of ["light", "dark"] as const) {
+    for (const color of ["w", "b"] as const) {
+      for (const type of ["p", "n", "b", "r", "q", "k"] as const) {
+        out[theme][`${color}${type.toUpperCase()}`] = pieceSvg(type, color, PIECE_INK[theme], 45);
+      }
+    }
+  }
+  return out;
 }
