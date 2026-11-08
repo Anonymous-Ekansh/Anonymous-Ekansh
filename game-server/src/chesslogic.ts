@@ -37,52 +37,43 @@ export interface ChessState {
   game: number;
   record: ChessRecord;
   result: string | null;
-  /** Salted hash of the cookie of whoever moved last. */
+  /** Salted hash of the cookie of whoever moved last. Never a raw cookie or a raw address. */
   lastMoveByVisitor: string | null;
-  /** Salted hash of that mover's IP; only consulted when a request arrives with no cookie. */
-  lastMoveByIp: string | null;
   version: number;
 }
 
-/**
- * Who is trying to move. Both fields are salted SHA-256 prefixes, so the raw cookie value and
- * the raw address never leave the request.
- */
+/** Who is trying to move. The hash is a salted SHA-256 prefix; the raw cookie never leaves the request. */
 export interface Mover {
   /** Hash of the visitor cookie. Always present: the route mints one when the request has none. */
   visitor: string;
-  /** Hash of the client IP. */
-  ip: string;
-  /** True when the request carried the cookie, so only `visitor` identifies it. */
-  cookie: boolean;
 }
 
 /**
  * The "no two consecutive chess moves" rule.
  *
- * A visitor that presents the cookie is identified by that cookie alone, so two people behind
- * one address can still alternate. Without the cookie the hashed IP stands in, which is the
- * documented fallback for browsers that refuse cookies.
+ * Identity is the visitor cookie and nothing else. The address is never consulted here: a
+ * shared Wi-Fi or office IP is not one person, and two players behind it must be able to
+ * answer each other. The route mints a cookie on a request that has none and uses that fresh
+ * hash for the request itself, so a visitor still cannot answer their own opening move.
  */
 export function sameMover(state: ChessState, mover: Mover | null): boolean {
   if (!mover) return false;
-  if (state.lastMoveByVisitor === mover.visitor) return true;
-  return !mover.cookie && state.lastMoveByIp === mover.ip;
+  return state.lastMoveByVisitor === mover.visitor;
 }
 
-function moverStamp(
-  state: ChessState,
-  mover: Mover | null,
-): Pick<ChessState, "lastMoveByVisitor" | "lastMoveByIp"> {
-  if (!mover) return { lastMoveByVisitor: state.lastMoveByVisitor, lastMoveByIp: state.lastMoveByIp };
-  return { lastMoveByVisitor: mover.visitor, lastMoveByIp: mover.ip };
+function moverStamp(state: ChessState, mover: Mover | null): Pick<ChessState, "lastMoveByVisitor"> {
+  return { lastMoveByVisitor: mover ? mover.visitor : state.lastMoveByVisitor };
 }
 
 export type ChessAction = "select" | "move" | "deselect" | "ignore" | "reset";
 
+/** Reported verbatim in the X-Arena-Reason response header. */
+export type StepReason = "moved" | "selected" | "same-visitor" | "not-your-turn" | "illegal";
+
 export interface ChessStep {
   state: ChessState;
   action: ChessAction;
+  reason: StepReason;
 }
 
 export function initialChess(): ChessState {
@@ -95,7 +86,6 @@ export function initialChess(): ChessState {
     record: { white: 0, black: 0, draw: 0 },
     result: null,
     lastMoveByVisitor: null,
-    lastMoveByIp: null,
     version: 0,
   };
 }
@@ -193,12 +183,12 @@ function activeSelection(state: ChessState, chess: Chess, now: number): { sq: st
  *  - anything else: ignore
  */
 export function chessClick(state: ChessState, sq: string, now: number, mover: Mover | null): ChessStep {
-  if (!isSquare(sq)) return { state, action: "ignore" };
+  if (!isSquare(sq)) return { state, action: "ignore", reason: "illegal" };
 
   const chess = newChess(state.fen);
   if (chess.isGameOver()) {
     // A previous move ended the game but the reset never landed; finish it now.
-    return { state: finishGame(state, chess, mover), action: "reset" };
+    return { state: finishGame(state, chess, mover), action: "reset", reason: "moved" };
   }
 
   const turn = chess.turn();
@@ -206,21 +196,27 @@ export function chessClick(state: ChessState, sq: string, now: number, mover: Mo
   const own = !!piece && piece.color === turn;
   const ownMoves = own ? targetsFrom(chess, sq) : [];
   const sel = activeSelection(state, chess, now);
+  // A piece that exists but belongs to the side not to move.
+  const wrongSide: StepReason = "not-your-turn";
 
   if (!sel) {
     if (own && ownMoves.length > 0) {
-      return { state: { ...state, selected: { sq, expires: now + SELECT_MS } }, action: "select" };
+      return { state: { ...state, selected: { sq, expires: now + SELECT_MS } }, action: "select", reason: "selected" };
     }
-    return { state: state.selected ? { ...state, selected: null } : state, action: "ignore" };
+    return {
+      state: state.selected ? { ...state, selected: null } : state,
+      action: "ignore",
+      reason: piece ? wrongSide : "illegal",
+    };
   }
 
-  if (sel.sq === sq) return { state: { ...state, selected: null }, action: "deselect" };
+  if (sel.sq === sq) return { state: { ...state, selected: null }, action: "deselect", reason: "selected" };
 
   const target = targetsFrom(chess, sel.sq).find((m) => m.to === sq);
   if (target) {
-    // One move per person in a row: the same visitor cannot play both colours.
+    // One move per person in a row: the same cookie cannot play both colours.
     if (sameMover(state, mover)) {
-      return { state: { ...state, selected: null }, action: "ignore" };
+      return { state: { ...state, selected: null }, action: "ignore", reason: "same-visitor" };
     }
     try {
       const mv = chess.move({ from: asSq(sel.sq), to: asSq(sq), promotion: "q" });
@@ -232,18 +228,18 @@ export function chessClick(state: ChessState, sq: string, now: number, mover: Mo
         recent: [...state.recent, mv.san].slice(-10),
         ...moverStamp(state, mover),
       };
-      if (chess.isGameOver()) return { state: finishGame(next, chess, mover), action: "move" };
-      return { state: next, action: "move" };
+      if (chess.isGameOver()) return { state: finishGame(next, chess, mover), action: "move", reason: "moved" };
+      return { state: next, action: "move", reason: "moved" };
     } catch {
-      return { state: { ...state, selected: null }, action: "ignore" };
+      return { state: { ...state, selected: null }, action: "ignore", reason: "illegal" };
     }
   }
 
   if (own && ownMoves.length > 0) {
-    return { state: { ...state, selected: { sq, expires: now + SELECT_MS } }, action: "select" };
+    return { state: { ...state, selected: { sq, expires: now + SELECT_MS } }, action: "select", reason: "selected" };
   }
 
-  return { state, action: "ignore" };
+  return { state, action: "ignore", reason: piece ? wrongSide : "illegal" };
 }
 
 /** /api/move path: an explicit from -> to drag, without relying on stored selection. */
@@ -254,10 +250,10 @@ export function chessMoveFromTo(
   now: number,
   mover: Mover | null,
 ): ChessStep {
-  if (!isSquare(from) || !isSquare(to) || from === to) return { state, action: "ignore" };
+  if (!isSquare(from) || !isSquare(to) || from === to) return { state, action: "ignore", reason: "illegal" };
 
   const chess = newChess(state.fen);
-  if (chess.isGameOver()) return { state: finishGame(state, chess, mover), action: "reset" };
+  if (chess.isGameOver()) return { state: finishGame(state, chess, mover), action: "reset", reason: "moved" };
 
   let working = state;
   const sel = activeSelection(state, chess, now);
@@ -318,9 +314,9 @@ export function normalizeChess(raw: unknown, version: number): ChessState {
       draw: clampInt(rec.draw, 0),
     },
     result: sanitizeText(r.result),
+    // `lastIpHash` and `lastMoveByIp` are pre-cookie field names that held an address hash.
+    // They are tolerated on read but never become an identity: an address is not a person.
     lastMoveByVisitor: hashOf(r.lastMoveByVisitor),
-    // `lastIpHash` is the pre-cookie field name and held an IP hash, so it maps to the IP slot.
-    lastMoveByIp: hashOf(r.lastMoveByIp) ?? hashOf(r.lastIpHash),
     version,
   };
 }

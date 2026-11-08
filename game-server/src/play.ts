@@ -255,7 +255,7 @@ function apply(data){
 
 async function refresh(){
   try {
-    const res = await fetch("/api/state", { cache: "no-store", credentials: "omit" });
+    const res = await fetch("/api/state", { cache: "no-store", credentials: "same-origin" });
     if (!res.ok) return;
     const data = await res.json();
     apply(data);
@@ -270,7 +270,7 @@ async function sendMove(payload){
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(payload),
-      credentials: "omit"
+      credentials: "same-origin"
     });
     const data = await res.json().catch(function(){ return null; });
     if (!res.ok || !data || data.ok !== true){

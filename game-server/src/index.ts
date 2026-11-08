@@ -60,6 +60,12 @@ export interface Deps {
   mode?: string | null;
 }
 
+/** Debug headers for a move response. Values only: never a hash, a cookie or an address. */
+interface Trace {
+  identity: "cookie" | "minted";
+  reason: string | null;
+}
+
 interface Ctx {
   store: StoreLike;
   now: () => number;
@@ -70,13 +76,17 @@ interface Ctx {
   mode: string | null;
   profile: string;
   salt: string;
+  trace: Trace;
 }
 
 /** Per-visitor cooldown: one move every 5 s, selection clicks get a lighter 1 s gate. */
 const moveLimiter = new RateLimiter(5_000);
 const selectLimiter = new RateLimiter(1_000);
-/** Coarse bot cap: 30 moves per hour per hashed IP, however many cookies it presents. */
-const ipMoveCap = new CountLimiter(60 * 60 * 1000, 30);
+/**
+ * Coarse bot cap: 120 moves per hour per hashed IP. It has to stay loose, because a classroom or
+ * an office shares one address; the per-visitor cooldown does the fine-grained work.
+ */
+const ipMoveCap = new CountLimiter(60 * 60 * 1000, 120);
 
 const NO_STORE = "no-store";
 
@@ -109,10 +119,11 @@ export async function route(request: Request, env: Env = {}, deps: Deps = {}): P
     profile:
       env.PROFILE_URL && /^https?:\/\/[^\s"'<>]+$/.test(env.PROFILE_URL) ? env.PROFILE_URL : PROFILE_DEFAULT,
     salt: env.RATE_SALT && env.RATE_SALT.length > 0 ? env.RATE_SALT : "arena-public-salt-v1",
+    trace: { identity: readVid(request) ? "cookie" : "minted", reason: null },
   };
 
   if (request.method === "POST") {
-    if (path === "/api/move") return apiMove(request, ctx);
+    if (path === "/api/move") return traced(ctx, await apiMove(request, ctx));
     return plain("method not allowed", 405, { Allow: "GET, POST" });
   }
   if (request.method !== "GET") return plain("method not allowed", 405, { Allow: "GET, POST" });
@@ -120,12 +131,12 @@ export async function route(request: Request, env: Env = {}, deps: Deps = {}): P
   let m: RegExpExecArray | null;
 
   if ((m = /^\/t\/tile\/([0-8])\.svg$/.exec(path))) return tttTile(ctx, Number(m[1]), theme, request);
-  if ((m = /^\/t\/click\/([0-8])$/.exec(path))) return tttClick(ctx, Number(m[1]), request);
-  if (path === "/t/new") return tttNew(ctx, request);
+  if ((m = /^\/t\/click\/([0-8])$/.exec(path))) return traced(ctx, await tttClick(ctx, Number(m[1]), request));
+  if (path === "/t/new") return traced(ctx, await tttNew(ctx, request));
   if (path === "/t/status.svg") return tttStatusImage(ctx, theme, request);
 
   if ((m = /^\/c\/tile\/([a-h][1-8])\.svg$/.exec(path))) return chessTile(ctx, m[1], theme, request);
-  if ((m = /^\/c\/click\/([a-h][1-8])$/.exec(path))) return chessClickRoute(ctx, m[1], request);
+  if ((m = /^\/c\/click\/([a-h][1-8])$/.exec(path))) return traced(ctx, await chessClickRoute(ctx, m[1], request));
   if (path === "/c/status.svg") return chessStatusImage(ctx, theme, request);
   if (path === "/c/recent.svg") return chessRecentImage(ctx, theme, request);
 
@@ -179,31 +190,33 @@ async function commit<T extends object>(
 interface Visitor {
   /** The cookie value to set on this response, or null when the request already had one. */
   vid: string | null;
-  /** Hash of the visitor cookie: the per-visitor limiter key. */
+  /** Hash of the visitor cookie: the only identity, and the cooldown key. */
   visitor: string;
-  /** Hash of the client IP: the coarse cap key and the cookie-less fallback. */
+  /** Hash of the client IP: the coarse hourly cap key, and nothing else. */
   ip: string;
-  /** True when the request carried the cookie. */
-  cookie: boolean;
-  /** The pair the chess turn rule compares against. */
+  /** True when this request minted the cookie. */
+  minted: boolean;
+  /** What the chess turn rule compares against. */
   mover: Mover;
 }
 
 /**
- * One identity per move request.
+ * One identity per move request, always the cookie.
  *
- * A `vid` cookie is minted when the request has none and set on the response, so the first
- * click starts a 30-day visitor. Only salted hashes of the cookie and of the IP are used, and
- * the raw values are never stored or logged. Without the cookie (cookies disabled) the hashed
- * IP is what identifies the visitor.
+ * A request without a cookie mints a `vid`, and that freshly minted value is this visitor for
+ * *this* request too: the first click of a visit is already attributable to them, so their next
+ * click can be refused as a second move in a row. The address is only a coarse bot cap; it never
+ * decides whose turn it is and no two visitors ever share a cooldown. Only salted hashes of the
+ * cookie and the address are used, and neither raw value is stored or logged.
  */
 async function identify(ctx: Ctx, request: Request): Promise<Visitor> {
   const existing = readVid(request);
   const vid = existing ?? newVid();
-  const cookie = existing !== null;
+  const minted = existing === null;
+  ctx.trace.identity = minted ? "minted" : "cookie";
   const visitor = await hashVisitor(vid, ctx.salt);
   const ip = await hashIp(ctx.ip, ctx.salt, ctx.now());
-  return { vid: cookie ? null : vid, visitor, ip, cookie, mover: { visitor, ip, cookie } };
+  return { vid: minted ? vid : null, visitor, ip, minted, mover: { visitor } };
 }
 
 /** Attaches the new cookie, if this request is the one that minted it. */
@@ -211,6 +224,14 @@ function withVid(response: Response, who: Visitor): Response {
   if (!who.vid) return response;
   const stamped = new Response(response.body, response);
   stamped.headers.append("Set-Cookie", vidSetCookie(who.vid));
+  return stamped;
+}
+
+/** Adds X-Arena-Identity and, when there is something to say, X-Arena-Reason. */
+function traced(ctx: Ctx, response: Response): Response {
+  const stamped = new Response(response.body, response);
+  stamped.headers.set("X-Arena-Identity", ctx.trace.identity);
+  if (ctx.trace.reason) stamped.headers.set("X-Arena-Reason", ctx.trace.reason);
   return stamped;
 }
 
@@ -246,6 +267,7 @@ async function tttClick(ctx: Ctx, i: number, request: Request): Promise<Response
 
   const v = version + 1;
   const ok = await commit(ctx, "ttt", row, next, v);
+  ctx.trace.reason = "moved";
   return moveDone(ctx, who, "ttt", ok ? v : version);
 }
 
@@ -263,6 +285,7 @@ async function tttNew(ctx: Ctx, request: Request): Promise<Response> {
 
   const v = version + 1;
   const ok = await commit(ctx, "ttt", row, next, v);
+  ctx.trace.reason = "moved";
   return moveDone(ctx, who, "ttt", ok ? v : version);
 }
 
@@ -291,6 +314,7 @@ async function chessClickRoute(ctx: Ctx, sq: string, request: Request): Promise<
   const who = await identify(ctx, request);
   const { row, state, version } = await loadChess(ctx);
   const step = chessClick(state, sq, ctx.now(), who.mover);
+  if (step.reason === "same-visitor") ctx.trace.reason = "same-visitor";
   if (step.action === "ignore") {
     // A refused move still clears the stored selection so the next visitor starts clean; it
     // is not a move and does not spend the cooldown.
@@ -305,6 +329,7 @@ async function chessClickRoute(ctx: Ctx, sq: string, request: Request): Promise<
 
   const v = version + 1;
   const ok = await commit(ctx, "chess", row, step.state, v);
+  if (step.action === "move" || step.action === "reset") ctx.trace.reason = "moved";
   return moveDone(ctx, who, "chess", ok ? v : version);
 }
 
@@ -315,7 +340,10 @@ async function apiMove(request: Request, ctx: Ctx): Promise<Response> {
   if (origin && origin !== new URL(request.url).origin) {
     return json({ ok: false, error: "cross-origin move rejected" }, 403);
   }
-  if (isBotUa(ctx.ua)) return json({ ok: false, error: "automated clients cannot move" }, 403);
+  if (isBotUa(ctx.ua)) {
+    ctx.trace.reason = "bot";
+    return json({ ok: false, error: "automated clients cannot move" }, 403);
+  }
 
   const raw = await request.text();
   if (raw.length > 512) return json({ ok: false, error: "request body too large" }, 413);
@@ -345,6 +373,7 @@ async function apiTtt(body: Record<string, unknown>, ctx: Ctx, who: Visitor): Pr
     if (limited) return limited;
     const v = version + 1;
     if (!(await commit(ctx, "ttt", row, next, v))) return raced();
+    ctx.trace.reason = "moved";
     return withVid(await snapshot(ctx), who);
   }
 
@@ -365,6 +394,7 @@ async function apiTtt(body: Record<string, unknown>, ctx: Ctx, who: Visitor): Pr
 
   const v = version + 1;
   if (!(await commit(ctx, "ttt", row, next, v))) return raced();
+  ctx.trace.reason = "moved";
   return withVid(await snapshot(ctx), who);
 }
 
@@ -378,6 +408,7 @@ async function apiChess(body: Record<string, unknown>, ctx: Ctx, who: Visitor): 
     if (limited) return limited;
     const v = version + 1;
     if (!(await commit(ctx, "chess", row, next, v))) return raced();
+    ctx.trace.reason = "moved";
     return withVid(await snapshot(ctx), who);
   }
 
@@ -388,6 +419,7 @@ async function apiChess(body: Record<string, unknown>, ctx: Ctx, who: Visitor): 
   if (from === to) return json({ ok: false, error: "pick a different destination square" }, 400);
 
   if (sameMover(state, who.mover)) {
+    ctx.trace.reason = "same-visitor";
     return json({ ok: false, error: "one move per person in a row — wait for another player" }, 409);
   }
 
@@ -402,6 +434,7 @@ async function apiChess(body: Record<string, unknown>, ctx: Ctx, who: Visitor): 
 
   const v = version + 1;
   if (!(await commit(ctx, "chess", row, step.state, v))) return raced();
+  ctx.trace.reason = "moved";
   return withVid(await snapshot(ctx), who);
 }
 
@@ -434,23 +467,25 @@ async function snapshot(ctx: Ctx): Promise<Response> {
 /* ------------------------------------------------------------------ guards and responses */
 
 function preflight(ctx: Ctx): Response | null {
-  if (isBotUa(ctx.ua)) return plain("forbidden — automated fetch blocked", 403);
-  if (!secFetchAllows(ctx.dest, ctx.mode)) {
-    return plain("forbidden — open this link, do not embed it", 403);
+  if (isBotUa(ctx.ua) || !secFetchAllows(ctx.dest, ctx.mode)) {
+    ctx.trace.reason = "bot";
+    return plain("forbidden — automated fetch or embed blocked", 403);
   }
   return null;
 }
 
 async function limitResponse(ctx: Ctx, kind: "move" | "select", who: Visitor): Promise<Response | null> {
-  // The cooldown is per visitor cookie; without a cookie the hashed IP stands in.
-  const key = who.cookie ? who.visitor : who.ip;
+  // The cooldown is per visitor, always: two people on one Wi-Fi never share a clock.
   const limiter = kind === "move" ? moveLimiter : selectLimiter;
-  if (!limiter.allow(`${kind}:${key}`, ctx.now())) {
-    return plain("slow down — one move every 5 seconds", 429, { "Retry-After": "5" });
+  if (!limiter.allow(`${kind}:${who.visitor}`, ctx.now())) {
+    ctx.trace.reason = "cooldown";
+    // A throttled first-time visitor still gets their cookie: the retry is theirs.
+    return withVid(plain("slow down — one move every 5 seconds", 429, { "Retry-After": "5" }), who);
   }
   // Selections are free; only real moves spend the coarse hourly IP allowance.
   if (kind === "move" && !ipMoveCap.allow(who.ip, ctx.now())) {
-    return plain("too many moves from this network — try again later", 429, { "Retry-After": "60" });
+    ctx.trace.reason = "ip-cap";
+    return withVid(plain("too many moves from this network — try again later", 429, { "Retry-After": "60" }), who);
   }
   return null;
 }

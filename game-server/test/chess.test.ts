@@ -15,8 +15,8 @@ const T0 = 1_700_000_000_000;
 const IP_A = "aaaaaaaaaaaaaaaaaaaa";
 const IP_B = "bbbbbbbbbbbbbbbbbbbb";
 
-/** Engine tests identify a visitor with a bare hash; the routes pass both halves. */
-const mover = (id: string): Mover => ({ visitor: id, ip: id, cookie: true });
+/** The engine identifies a mover by one hash, which is the cookie hash in production. */
+const mover = (id: string): Mover => ({ visitor: id });
 
 function fresh(overrides: Partial<ChessState> = {}): ChessState {
   return { ...initialChess(), ...overrides };

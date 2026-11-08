@@ -58,6 +58,10 @@ python3 tools/build_arena.py        # paste the printed block into README.md
 Unknown or out-of-range parameters (`/t/tile/9.svg`, `/c/tile/z9.svg`, `/c/click/e9`) are a
 404, not a redirect.
 
+`/click` and `/api/move` answer with two debug headers: `X-Arena-Identity: cookie|minted` and,
+when something was decided, `X-Arena-Reason: moved | same-visitor | cooldown | ip-cap | bot`.
+They carry no hash, cookie or address, so a visitor can see which rule applied.
+
 ## Storage
 
 One table, two rows:
@@ -105,13 +109,14 @@ hand back a cached profile page.
    `Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=2592000` (30 days) from the Worker origin.
    Only its salted SHA-256 prefix (20 hex characters) is ever used or stored, so one person is
    one visitor even behind a shared address.
-4. **Per-visitor cooldown and the chess turn rule.** Both key on that hash: one move per 5
-   seconds (selection clicks get 1 second), and the last mover's hash is stored in the chess
-   row so the same visitor cannot play both White and Black in a row. A second cookie on the
-   same address still can.
-5. **Hashed-IP bot cap.** The only IP-based limit: 30 moves per hour per salted, daily-rotating
-   `CF-Connecting-IP` hash. Normal play behind NAT never reaches it. When the cookie is absent
-   (cookies disabled) the hashed IP also stands in for the cooldown and the turn rule.
+4. **Per-visitor cooldown and the chess turn rule.** Both key on that hash and nothing else:
+   one move per 5 seconds (selection clicks get 1 second), and the last mover's hash is stored
+   in the chess row so the same visitor cannot play both White and Black in a row. A request
+   without a cookie mints one and is attributed to the fresh hash immediately, so two people on
+   one Wi-Fi are two visitors and can answer each other freely.
+5. **Hashed-IP bot cap.** The only IP-based limit: 120 moves per hour per salted, daily-rotating
+   `CF-Connecting-IP` hash. It is deliberately loose, because a classroom or an office shares
+   one address. The address never decides whose turn it is and never shares a cooldown.
 6. **Strict parameters.** `/^[0-8]$/` and `/^[a-h][1-8]$/` before any work; nothing from a
    query string or header is echoed into a tile (status text is generated, XML is escaped).
    The `Referer` is never read.
@@ -157,8 +162,9 @@ npm run typecheck   # tsc --noEmit
 Covers: win / loss / draw / taken tile / click after game over, legal and illegal moves,
 wrong colour, selection expiry, promotion, checkmate, stalemate, new game after a result, the
 visitor cookie, two cookies alternating on one IP, the same-cookie turn rule, the 5-second
-cooldown, the 30-moves-per-hour IP cap, the UA and fetch-metadata screens, ETag 304, the 302 to
-the profile, an `<img>` embed rejection, and the JSON API.
+cooldown, two visitors behind one IP alternating four moves, the 120-moves-per-hour IP cap,
+the UA and fetch-metadata screens, ETag 304, the 302 to the profile, an `<img>` embed
+rejection, and the JSON API.
 
 ## Notes and limits
 
