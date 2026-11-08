@@ -156,7 +156,7 @@ def build_header(data: dict, palette: dict) -> str:
     name = "Ekansh Jain"
     index = h.get("index", "PORTFOLIO — INDEX Nº 001")
     place = "INDIA"
-    subtitle = "Full-stack engineer — products people actually need."
+    subtitle = h.get("subtitle", "Full Stack Engineer — building products people actually need")
     status = "status ▸ open to SWE internships · early-stage startup roles · product engineering · fintech"
     pillars = h.get("pillars", ["FULL-STACK SYSTEMS", "APPLIED AI & AGENTS", "FINTECH"])
     tag = h.get("tag", "B.TECH CS")
