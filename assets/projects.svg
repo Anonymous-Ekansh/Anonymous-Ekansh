@@ -118,10 +118,10 @@
     </g>
     <g transform="translate(0, 790)">
       <g class="rise d8">
-      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">08 / PORTFOLIO</text>
-      <text x="48" y="49" font-size="12" fill="#333333">Personal site: terminal-flavoured hero, skills, projects and contact in plain HTML, CSS and JavaScript.</text>
-      <text x="48" y="68" font-size="12" fill="#333333">Live on Netlify; zero framework, zero build step.</text>
-      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">HTML · CSS · JAVASCRIPT · NETLIFY</text>
+      <text x="48" y="24" font-size="17" font-weight="700" fill="#333333" letter-spacing="0.8">08 / COMPUTEQUEST</text>
+      <text x="48" y="49" font-size="12" fill="#333333">Browser distributed compute via idle GPUs for real-time molecular docking in drug discovery and local WebLLM inference.</text>
+      <text x="48" y="68" font-size="12" fill="#333333">Gamified via The Forge: a collectible card game where users earn compute credits, unlock cards, build decks and battle AI.</text>
+      <text x="48" y="87" font-size="11" fill="#777777" letter-spacing="0.4">NODE.JS · EXPRESS · SOCKET.IO · REACT · VITE · WEBLLM</text>
       <line x1="48" y1="104" x2="952" y2="104" stroke="#C4C4C4" stroke-width="1"/>
       </g>
     </g>

@@ -289,24 +289,21 @@ export function parseChessRow(json: string, version: number): ChessState {
   return normalizeChess(safeJson(json), version);
 }
 
-export function chessStatusText(state: ChessState): { line1: string; line2: string } {
+/** One line, sized to the 416 px banner. The renderer clips anything longer. */
+export function chessStatusLine(state: ChessState): string {
   const chess = newChess(state.fen);
   const turn = chess.turn() === "w" ? "White" : "Black";
-  const last = state.last ? `last: ${state.last.san}` : "last: —";
-  const line1 = `${turn} to move · game #${state.game} · ${last}`;
-
+  const last = state.last ? `last ${state.last.san}` : "last —";
+  const flags = state.result ? ` · ${state.result}` : chess.inCheck() ? " · check" : "";
   const r = state.record;
-  let line2 = `white ${r.white} · black ${r.black} · draw ${r.draw}`;
-  if (state.result) line2 += ` · ${state.result}`;
-  else if (chess.inCheck()) line2 += " · check";
-  return { line1, line2 };
+  return `${turn} to move · game ${state.game} · ${last}${flags} · ${r.white}-${r.black}-${r.draw}`;
 }
 
-export function chessRecentText(state: ChessState): { line1: string; line2: string } {
+export function chessRecentLine(state: ChessState): string {
   const moves = state.recent.slice(-5);
-  const line1 = moves.length > 0 ? `recent — ${moves.join(" ")}` : "recent — no moves yet";
-  const line2 = `game #${state.game} · last 5 of the last 10 plies`;
-  return { line1, line2 };
+  return moves.length > 0
+    ? `recent — ${moves.join(" ")} · game ${state.game}`
+    : `recent — no moves yet · game ${state.game}`;
 }
 
 /** Snapshots for /api/state and /api/move (no hashes, no selection expiry noise). */

@@ -186,14 +186,16 @@ export function parseTttRow(json: string, version: number): TttState {
   return normalizeTtt(safeJson(json), version);
 }
 
-export function tttStatusText(state: TttState): { line1: string; line2: string } {
-  let line1: string;
-  if (!state.over) line1 = "your move — you are X, the bot is O";
-  else if (state.result === "win") line1 = "game over — you won · play again";
-  else if (state.result === "loss") line1 = "game over — the bot won · play again";
-  else line1 = "game over — draw · play again";
-
+/** One line, sized to the 228 px banner. Must stay under ~36 characters. */
+export function tttStatusLine(state: TttState): string {
   const r = state.record;
-  const line2 = `visitors ${r.visitors} · bot ${r.bot} · draws ${r.draws}`;
-  return { line1, line2 };
+  const score = `you ${r.visitors} · bot ${r.bot} · draw ${r.draws}`;
+
+  let head: string;
+  if (!state.over) head = "your move — you are X";
+  else if (state.result === "win") head = "you won — play again";
+  else if (state.result === "loss") head = "bot won — play again";
+  else head = "draw — play again";
+
+  return `${head} · ${score}`;
 }

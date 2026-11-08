@@ -8,10 +8,13 @@
  * validates every move, so the page degrades instead of breaking.
  */
 
-import { PIECE_SHAPES } from "./pieces";
+import { markSet } from "./brushes";
+import { pieceSet } from "./pieces";
 
 export function playPage(profile: string): string {
-  const pieces = JSON.stringify(PIECE_SHAPES).replace(/</g, "\\u003c");
+  // Both themes are embedded so the page never needs a flash of the wrong ink.
+  const pieces = JSON.stringify(pieceSet()).replace(/</g, "\\u003c");
+  const marks = JSON.stringify(markSet()).replace(/</g, "\\u003c");
   const esc = profile.replace(/"/g, "&quot;");
 
   return `<!doctype html>
@@ -58,13 +61,12 @@ h2{font-size:10.5px;font-weight:600;letter-spacing:.2em;margin:0;color:var(--acc
 .sq.cap::before{width:66%;height:66%;margin:-33% 0 0 -33%;background:transparent;border:3px solid var(--accent);opacity:.45}
 .sq:focus-visible{outline:3px dashed var(--accent);outline-offset:-3px;z-index:3}
 .pc{display:block;width:100%;height:100%;pointer-events:none}
-.pc.w g{fill:none;stroke:var(--bone);stroke-width:1.9;stroke-linejoin:round;stroke-linecap:round}
-.pc.b g{fill:var(--bone);stroke:var(--bone);stroke-width:1.1;stroke-linejoin:round;stroke-linecap:round}
+.pc g{pointer-events:none}
 .ttt{--tile:clamp(58px,17vw,84px);display:grid;grid-template-columns:repeat(3,var(--tile));gap:7px;width:max-content}
 .tcell{position:relative;width:var(--tile);height:var(--tile);padding:0;border:1.5px solid var(--rule);border-radius:9px;background:transparent;cursor:pointer;appearance:none;-webkit-appearance:none}
-.tcell.x::before{content:"";position:absolute;inset:26%;background:linear-gradient(45deg,transparent 43%,var(--mark) 43% 57%,transparent 57%),linear-gradient(-45deg,transparent 43%,var(--mark) 43% 57%,transparent 57%)}
-.tcell.o::before{content:"";position:absolute;inset:26%;border:6px solid var(--mark);border-radius:50%}
-.tcell.win{--mark:var(--accent);border-color:var(--accent)}
+.tcell .tm{position:absolute;inset:0;width:100%;height:100%;pointer-events:none;transition:opacity .2s ease}
+.tcell.dim .tm{opacity:.45}
+.tcell.win{border-color:var(--accent)}
 .tcell:disabled{cursor:default}
 .tcell:focus-visible{outline:3px dashed var(--accent);outline-offset:2px}
 dl.meta{margin:10px 0 0;padding:0;display:grid;gap:3px}
@@ -121,12 +123,13 @@ footer{margin-top:24px;border-top:1px solid var(--rule);padding-top:10px;color:v
 </main>
 <footer>
   <span>shared boards · moves are rate limited · <a href="${esc}">github.com/Anonymous-Ekansh</a></span>
-  <span>pieces: original geometric set (CC0) · chess.js 1.4.0 (BSD-2)</span>
+  <span>pieces: Cburnett (CC BY-SA 3.0) · chess.js 1.4.0 (BSD-2)</span>
 </footer>
 <script type="module">
 const CDN = "https://cdn.jsdelivr.net/npm/chess.js@1.4.0/dist/esm/chess.js";
 const SRI = "sha384-A9KE46F70Ao1BUdhGSxgP0+9OhPjBrpf6gsBehqG12SbeKbFWnO7bwtNT68I4xKh";
 const PIECES = ${pieces};
+const MARKS = ${marks};
 const FILES = ["a","b","c","d","e","f","g","h"];
 const NAMES = {p:"pawn",n:"knight",b:"bishop",r:"rook",q:"queen",k:"king"};
 const SVGNS = "http://www.w3.org/2000/svg";
@@ -164,16 +167,19 @@ function boardMap(fen){
   return out;
 }
 
+function themeName(){
+  try { return matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light"; }
+  catch (err) { return "light"; }
+}
+
 function pieceNode(piece){
   const svg = document.createElementNS(SVGNS, "svg");
-  svg.setAttribute("viewBox", "0 0 44 44");
-  svg.setAttribute("class", "pc " + piece.color);
+  svg.setAttribute("viewBox", "0 0 45 45");
+  svg.setAttribute("class", "pc");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
-  const g = document.createElementNS(SVGNS, "g");
-  g.setAttribute("transform", "translate(6.2 5.6) scale(0.72)");
-  g.innerHTML = PIECES[piece.type] || "";
-  svg.appendChild(g);
+  const key = piece.color + piece.type.toUpperCase();
+  svg.innerHTML = (PIECES[themeName()] || {})[key] || "";
   return svg;
 }
 
@@ -229,7 +235,9 @@ function renderTtt(){
     const btn = tttCells[i];
     const v = st.board[i];
     const winning = !!st.line && st.line.indexOf(i) >= 0;
-    btn.className = "tcell" + (v ? " " + v.toLowerCase() : "") + (winning ? " win" : "");
+    btn.className = "tcell" + (winning ? " win" : "") + (st.line && !winning ? " dim" : "");
+    const ink = v ? (MARKS[themeName()] || {})[v] : null;
+    btn.innerHTML = ink ? ink[i % 3] || "" : "";
     btn.disabled = !!v || !!st.over;
     btn.setAttribute("aria-label", "cell " + (i + 1) + (v ? " " + v : " empty") + (winning ? ", winning line" : ""));
   }
@@ -421,6 +429,12 @@ async function init(){
 }
 
 init();
+
+try {
+  const scheme = matchMedia("(prefers-color-scheme: dark)");
+  const repaint = function(){ renderChess(); renderTtt(); };
+  if (scheme.addEventListener) scheme.addEventListener("change", repaint);
+} catch (err) { /* older browsers keep the first render */ }
 </script>
 </body>
 </html>`;

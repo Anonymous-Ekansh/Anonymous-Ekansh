@@ -109,13 +109,13 @@
       "repo": "Anonymous-Ekansh/bcon-website"
     },
     {
-      "name": "08 / PORTFOLIO",
+      "name": "08 / COMPUTEQUEST",
       "desc": [
-        "Personal site: terminal-flavoured hero, skills, projects and contact in plain HTML, CSS and JavaScript.",
-        "Live on Netlify; zero framework, zero build step."
+        "Browser distributed compute via idle GPUs for real-time molecular docking in drug discovery and local WebLLM inference.",
+        "Gamified via The Forge: a collectible card game where users earn compute credits, unlock cards, build decks and battle AI."
       ],
-      "tags": "HTML · CSS · JAVASCRIPT · NETLIFY",
-      "repo": "Anonymous-Ekansh/Portfolio"
+      "tags": "NODE.JS · EXPRESS · SOCKET.IO · REACT · VITE · WEBLLM",
+      "repo": "Anonymous-Ekansh/ComputeQuest-hackwave"
     },
     {
       "name": "09 / POLYINTEL",
