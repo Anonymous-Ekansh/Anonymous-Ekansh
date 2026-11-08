@@ -90,17 +90,13 @@ def ttt_board_table(worker: str) -> str:
 # --- variant (b): inline images, no whitespace between anchors ------------------------
 
 def chess_board_inline(worker: str) -> str:
-    rows = []
-    for rank in RANKS:
-        rows.append("".join(chess_tile(worker, f + str(rank)) for f in FILES) + "<br/>")
-    return "\n".join(rows)
+    rows = ["".join(chess_tile(worker, f + str(rank)) for f in FILES) for rank in RANKS]
+    return "<br/>".join(rows)
 
 
 def ttt_board_inline(worker: str) -> str:
-    rows = []
-    for r in range(3):
-        rows.append("".join(ttt_tile(worker, r * 3 + c) for c in range(3)) + "<br/>")
-    return "\n".join(rows)
+    rows = ["".join(ttt_tile(worker, r * 3 + c) for c in range(3)) for r in range(3)]
+    return "<br/>".join(rows)
 
 
 def gap_estimate(variant: str) -> int:
