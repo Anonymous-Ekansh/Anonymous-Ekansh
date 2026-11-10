@@ -127,7 +127,8 @@ def build(worker: str, variant: str) -> str:
   {status}<br/>
 {chess_board}<br/>
   {recent}<br/>
-  <a href="{worker}/play">{chess_btn}</a>
+  <a href="{worker}/play">{chess_btn}</a><br/>
+  <sub>shared board: you can't move consecutively — any visitor on the internet can play the next turn, then you can play again</sub>
 </td>
 <td valign="top" width="38%">
   <b><code>NO TIME? QUICK TIC-TAC-TOE</code></b><br/>
