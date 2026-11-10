@@ -133,7 +133,8 @@ def build(worker: str, variant: str) -> str:
   <b><code>NO TIME? QUICK TIC-TAC-TOE</code></b><br/>
 {ttt_board}<br/>
   {ttt_status}<br/>
-  <a href="{worker}/t/new">{ttt_btn}</a>
+  <a href="{worker}/t/new">{ttt_btn}</a><br/>
+  <sub>move after 5 seconds, before that isn't captured</sub>
 </td></tr></table>"""
 
 
